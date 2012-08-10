@@ -1,0 +1,100 @@
+<!doctype html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="fr"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="fr"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="fr"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="fr"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+	<title>{% block title endblock %} | {{ 'service.name'|trans }}</title>
+	<meta name="description" content="{% block description %}{% endblock %}">
+	<meta name="author" content="mySkreen">
+	<meta name="language" content="fr-FR" />
+	<meta name="viewport" content="width=device-width">
+	<meta name="robots" content="noindex,nofollow">
+	{% block meta %}{% endblock %}
+
+  {% stylesheets
+      '@SkreenHouseFactoryV3Bundle/Resources/public/initializr/less/style.less'
+        filter='less,?yui_css'
+        output='css/style.css'
+        %}
+      <link href="{{ asset_url }}" rel="stylesheet" media="screen" />
+  {% endstylesheets %}
+
+	<script src="{{ asset('bundles/skreenhousefactoryv3/initializr/js/libs/modernizr-2.5.3-respond-1.1.0.min.js') }}"></script>
+</head>
+<body>
+<!--[if lt IE 7]><p class=chromeframe>Votre navigateur est <em>ancien!</em> <a href="http://browsehappy.com/">Mettez-le à jour</a> ou <a href="http://www.google.com/chromeframe/?redirect=true">installez Google Chrome Frame</a> pour profiter utiliser mySkreen dans les meilleurs conditions.</p><![endif]-->
+
+    <div class="modal hide" id="skModal">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">×</button>
+        <h3>{{ 'loading'|trans }} ...</h3>
+      </div>
+      <div class="modal-body">
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+
+    <div id="header">
+    {% include 'SkreenHouseFactoryV3Bundle:Main:_header.html.twig' with {'menus': menus} %}
+    </div>
+
+    {% block content %}
+    {% endblock %}
+
+    <div id="player">
+      <i class="icon-resize-small icon-white"></i>
+      <div class="metas player-overlay"><span class="title"></span><br/><span class="subtitle"></span><br/><span class="actions"></span></div>
+      <div class="embed"></div>
+    </div>
+
+    <div id="redirect" class="collapse in">
+    {% block redirect %}
+    {% endblock %}
+    </div>
+    
+    <div id="top-links">
+    {% for key,m in menus %}
+      <ul>{{  'all.the.format'|trans({'%format%': key|lower}) }} : 
+      {% for l in m %}
+        <li><a href="link-v2('{{ l.seo_url }}');" title="{{ l.name }} {{  key }} {{ 'access.streaming'|trans }}">{{ l.name }}</a></li>
+      {% endfor %}
+      </ul>
+    {% endfor %}
+    </div>
+
+    <div class="container">
+
+    {#
+      <footer>
+        <hr />
+        <p>&copy; The Skreen House Factory 2012</p>
+      </footer>
+    #}
+
+    </div> <!-- /container -->
+
+{% javascripts
+    '@SkreenHouseFactoryV3Bundle/Resources/public/initializr/js/libs/jquery-1.7.2.min.js'
+    '@SkreenHouseFactoryV3Bundle/Resources/public/initializr/js/libs/bootstrap/first/*'
+    '@SkreenHouseFactoryV3Bundle/Resources/public/initializr/js/libs/bootstrap/last/*'
+    '@SkreenHouseFactoryV3Bundle/Resources/public/js/vendors/*'
+    '@SkreenHouseFactoryV3Bundle/Resources/public/js/*' 
+    filter='?yui_js' 
+    output='js/compiled/script.js'  %}
+    <script src="{{ asset_url }}"></script>
+{% endjavascripts %}
+
+<script>
+	var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+	(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+	g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+	s.parentNode.insertBefore(g,s)}(document,'script'));
+</script>
+
+</body>
+</html>
