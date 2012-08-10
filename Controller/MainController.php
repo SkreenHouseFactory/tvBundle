@@ -25,7 +25,7 @@ class MainController extends Controller
     public function tvAction(Request $request)
     {
 
-      $response = $this->render('SkreenHouseFactoryTvBundle:Main:tv.html.twig', array(
+      $response = $this->render('SkreenHouseFactoryTvBundle:Main:splash.html.twig', array(
       ));
       /*$response->headers->set('Access-Control-Allow-Origin', '*');
       $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');

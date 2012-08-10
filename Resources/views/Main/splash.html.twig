@@ -1,0 +1,18 @@
+{% extends 'SkreenHouseFactoryTvBundle::layout.html.twig' %}
+
+{% block title %}{{ 'page.title.home'|trans }}{% endblock %}
+
+{% block content %}
+<div id="splash">
+<img id="logo" src="{{ asset('bundles/skreenhousefactorytv/images/logo.png') }}" alt="{{ 'service.name'|trans }}" />
+<div id="icons">
+  <div class="icon"><div class="img"></div>{{ 'splash.tv.replay'|trans }}</div>
+  <div class="icon"><div class="img"></div>{{ 'splash.vod'|trans }}</div>
+  <div class="icon"><div class="img"></div>{{ 'splash.cine'|trans }}</div>
+  <div class="icon"><div class="img"></div>{{ 'splash.playlist'|trans }}</div>
+</div>
+<div id="search">
+<input type="text" />
+</div>
+</div>
+{% endblock %}
