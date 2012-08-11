@@ -10,6 +10,16 @@ body {
   background: @bgBody;
 }
 
+.item-row {
+  .item-parent {
+    .item {
+    }
+    .item-selected {
+      /*border: #dd0 solid 6px !important;*/
+    }
+  }
+}
+
 #splash {
   text-align: center;
   width: 100%;
@@ -17,25 +27,42 @@ body {
   color: white;
   font-size: 1.2em;
 
+  > div {
+    clear: both;
+  }
+
   #logo {
     margin: 12% 0 2%;
   }
 
   #icons {
     margin-top: 5%;
+    height: 120px;
 
     .icon {
       text-align: center;
       display: inline-block;
       margin: 0 40px;
 
-      .img {
-        height: 100px;
-        width: 100px;
-        box-shadow: 0px 0px 7px white;
-        border-radius: 10px;
-        margin-bottom: 10px;
-        background: #555;
+      .item {
+        .img {
+          height: 100px;
+          width: 100px;
+          box-shadow: 0px 0px 7px white;
+          border-radius: 10px;
+          margin-bottom: 10px;
+          background: #555;
+        }
+      }
+    }
+    .icon:focus, .icon:hover, .icon {
+
+      .item.item-selected {
+        color: yellow;
+        
+        .img {
+          box-shadow: 0px 0px 10px yellow;
+        }
       }
     }
   }
@@ -50,8 +77,9 @@ body {
       background: #EEE;
       box-shadow: inset 1px -1px 3px #AAA;
     }
-    input:focus {
-      box-shadow: inset 1px -1px 3px blue;
+    input:focus, input.item-selected {
+      box-shadow: inset 1px -1px 3px yellow;
+      background: yellow;
     }
   }
 }
