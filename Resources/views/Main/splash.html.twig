@@ -6,13 +6,13 @@
 <div id="splash">
 <img id="logo" src="{{ asset('bundles/skreenhousefactorytv/images/logo.png') }}" alt="{{ 'service.name'|trans }}" />
 <div id="icons" class="item-row">
-  <div class="icon item-parent"><div class="item" data-load-route="tv-replay" data-load-view="sliders"><div class="img"></div>{{ 'splash.tv.replay'|trans }}</div></div>
-  <div class="icon item-parent"><div class="item" data-load-route="vod"><div class="img"></div>{{ 'splash.vod'|trans }}</div></div>
-  <div class="icon item-parent"><div class="item" data-load-route="cine"><div class="img"></div>{{ 'splash.cine'|trans }}</div></div>
+  <div class="icon item-parent"><div class="item" data-load-route="tv-replay" data-load-view="sliders" data-slider-scroll="no"><div class="img"></div>{{ 'splash.tv.replay'|trans }}</div></div>
+  <div class="icon item-parent"><div class="item" data-load-route="v3-vod"><div class="img"></div>{{ 'splash.vod'|trans }}</div></div>
+  <div class="icon item-parent"><div class="item" data-load-route="v3-cine"><div class="img"></div>{{ 'splash.cine'|trans }}</div></div>
   <div class="icon item-parent"><div class="item" data-load-route="playlist"><div class="img"></div>{{ 'splash.playlist'|trans }}</div></div>
 </div>
 <div id="search" class="item-row">
-<form class="item-parent"><input type="text" class="item" data-load-view="sliders" data-load-route="search" /></form>
+<div class="item-parent"><input type="text" class="item" data-load-view="sliders" data-load-route="search" /></div>
 </div>
 </div>
 {% endblock %}
