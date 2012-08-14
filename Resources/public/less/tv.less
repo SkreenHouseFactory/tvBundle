@@ -2,8 +2,8 @@
    Author: Benoît Bergstörm
    ========================================================================== */
 
-@bgBody:      url("/bundles/skreenhousefactorytv/images/bg.png");
-@focusBorder: #dd0 solid 6px !important;
+@bgBody:      url("/bundles/skreenhousefactorytv/images/bg2.png");
+@focusBorder: #dd0 solid 2px !important;
 @focusShadow: 0px 0px 10px yellow;
 @focusShadowInset: inset 0px 0px 10px yellow;
 
@@ -13,6 +13,7 @@ body {
   height: 100%;
   background: @bgBody;
   box-shadow: inset 0 1px 200px #444;
+  overflow: hidden;
 }
 
 .item-row {
@@ -24,8 +25,50 @@ body {
     }
   }
 }
-:focus {
-  border: @focusBorder;
+
+.modal {
+  border: 5px solid #555;
+  background-color: #111;
+  color: white;
+  font-size: 1.2em;
+
+  .modal-header {
+    border-bottom: 1px solid #222;
+  }
+  .modal-footer {
+    background-color: #000;
+    border-top: 1px solid #222;
+  }
+
+  .table-striped tbody tr:nth-child(odd) td, .table-striped tbody tr:nth-child(odd) th {
+    background-color: #333;
+  }
+  .table-striped tbody tr:nth-child(odd):hover td, .table-striped tbody tr:hover td {
+    background-color: #222;
+  }
+  .table th, .table td {
+    border-top: 1px solid #222;
+    height: 50px;
+    /*transition: background-position 0.1s linear;
+    background-repeat: repeat-x;
+    background-image: linear-gradient(top, #222, #666);*/
+  }
+  
+  h4 {
+    background: black;
+    padding: 5px;
+    border-top: 5px solid #555;
+    text-align: center;
+    font-weight: normal;
+  }
+
+  .paymentPopin form label[for="inscrit"], .paymentPopin form label[for="inscrit_1"] {
+    color: white;
+  }
+}
+
+.tv-component.tv-component-focused, :focus {
+  border: @focusBorder !important;
 }
 
 
@@ -57,15 +100,13 @@ body {
       display: inline-block;
       margin: 0 40px;
 
-      .item {
-        .img {
-          height: 100px;
-          width: 100px;
-          box-shadow: 0px 0px 7px white;
-          border-radius: 10px;
-          margin-bottom: 10px;
-          background: #555;
-        }
+      .img {
+        height: 100px;
+        width: 100px;
+        box-shadow: 0px 0px 7px white;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        background: #555;
       }
     }
     .icon:focus, .icon:hover, .icon {
@@ -90,10 +131,11 @@ body {
     padding: 10px;
     background: #EEE;
     box-shadow: inset 1px -1px 3px #AAA;
+    text-align: center;
+    font-size: 1.3em;
   }
   input:focus, input.item-selected {
     box-shadow: @focusShadowInset;
-    background: yellow;
   }
 }
 
@@ -158,9 +200,14 @@ body {
         border-bottom-right-radius: 5px;
       }
     }
+    ul.tv-container-show {
+      li {
+        display: block;
+      }
+    }
   }
-  .nav:hover, .nav:focus, .subnav:hover, .subnav:focus {
-    li {
+  .nav:hover, .subnav:hover, .tv-component-focused {
+    ul li {
       display: block;
       
     }
@@ -172,17 +219,44 @@ body {
   
   #couchmode-sliders {
     width: 100%;
-    height: 240px;
+    height: 280px;
     position: absolute;
     z-index: 1;
     bottom: 0;
+    overflow-y: hidden;
     
-    .slider {
-      display: none;
-      height: 240px;
+    .cache {
+      background: black;
+      height: 100%;
+      width: 100%;
+      opacity: 0.5;
+      position: absolute;
+      z-index: 2;
     }
-    .slider.current {
-      display: block;
+    
+    .container {
+      position: absolute;
+      z-index: 3;
+      width: 100%;
+      
+      .slider {
+        height: 240px;
+      }
+      .slider.current, .slider.down {
+        display: block;
+      }
+      
+      .slider.down, .slider.up {
+        
+        h2 {
+          display: none;
+        }
+        
+        ul {
+          margin-top: 10px;
+          opacity: 0.3;
+        }
+      }
     }
   }
   
@@ -195,22 +269,25 @@ body {
 #sliders {
   padding-top: 50px;
 
+  .slider {
+    height: 240px;
+    margin-top: 15px;
+  }
+}
+
+.slider {
   h2 {
     color: #DDD;
     padding: 0 0 0 10px;
     font-weight: normal;
   }
 
-  .slider {
-    height: 240px;
-    
-    ul.items li:focus, ul.items li:hover {
-      div.actions {
-        display: block;
-        
-        .fav {
-          display: none;
-        }
+  ul.items li.tv-component-focused, ul.items li:hover {
+    div.actions {
+      display: block;
+      
+      .fav {
+        display: none;
       }
     }
   }

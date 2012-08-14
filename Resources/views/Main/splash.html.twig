@@ -4,15 +4,15 @@
 
 {% block content %}
 <div id="splash">
-<img id="logo" src="{{ asset('bundles/skreenhousefactorytv/images/logo.png') }}" alt="{{ 'service.name'|trans }}" />
-<div id="icons" class="item-row">
-  <div class="icon item-parent"><div class="item" data-load-route="tv-replay" data-load-view="sliders" data-slider-scroll="no"><div class="img"></div>{{ 'splash.tv.replay'|trans }}</div></div>
-  <div class="icon item-parent"><div class="item" data-load-route="v3-vod"><div class="img"></div>{{ 'splash.vod'|trans }}</div></div>
-  <div class="icon item-parent"><div class="item" data-load-route="v3-cine"><div class="img"></div>{{ 'splash.cine'|trans }}</div></div>
-  <div class="icon item-parent"><div class="item" data-load-route="playlist"><div class="img"></div>{{ 'splash.playlist'|trans }}</div></div>
-</div>
-<div id="search" class="item-row">
-<div class="item-parent"><input type="text" class="item" data-load-view="sliders" data-load-route="search" /></div>
-</div>
+  <img id="logo" src="{{ asset('bundles/skreenhousefactorytv/images/logo.png') }}" alt="{{ 'service.name'|trans }}" />
+  <div id="icons" class="tv-container-horizontal">
+    <div class="icon tv-component" data-load-route="tv-replay" data-load-view="sliders" data-slider-scroll="yes"><div class="img"></div>{{ 'splash.tv.replay'|trans }}</div>
+    <div class="icon tv-component" data-load-route="v3-vod"><div class="img"></div>{{ 'splash.vod'|trans }}</div>
+    <div class="icon tv-component" data-load-route="v3-cine"><div class="img"></div>{{ 'splash.cine'|trans }}</div>
+    <div class="icon tv-component" data-load-route="playlist"><div class="img"></div>{{ 'splash.playlist'|trans }}</div>
+  </div>
+  <div id="search" class="tv-container-horizontal">
+  <input type="text" class="tv-component" data-load-view="sliders" data-load-route="search" />
+  </div>
 </div>
 {% endblock %}

@@ -40,17 +40,17 @@
 <!--[if lt IE 7]><p class=chromeframe>Votre navigateur est <em>ancien!</em> <a href="http://browsehappy.com/">Mettez-le à jour</a> ou <a href="http://www.google.com/chromeframe/?redirect=true">installez Google Chrome Frame</a> pour profiter utiliser mySkreen dans les meilleurs conditions.</p><![endif]-->
 
     {% include 'SkreenHouseFactoryV3Bundle:Main:_modal.html.twig' %}
-    <div id="topbar" class="template overlay item-row">
-      <div class="logo item-parent" data-load-route="splash" data-load-view="splash"><img class="item" src="{{ asset('bundles/skreenhousefactorytv/images/ecrans.png') }}" /></div>
-      <div class="onglet item-parent"><span class="item"></span></div>
-      <div class="nav item-parent tv-container-vertical">
+    <div id="topbar" class="template overlay tv-container-horizontal">
+      <div class="logo tv-component" data-load-route="splash" data-load-view="splash"><img src="{{ asset('bundles/skreenhousefactorytv/images/ecrans.png') }}" /></div>
+      <div class="onglet"><span></span></div>
+      <div class="nav tv-component tv-container-vertical">
         <i class="icon-chevron-down icon-white"></i>
-        <ul class="tv-container-middle-scroll item">
+        <ul class="tv-container-vertical">
         </ul>
       </div>
-      <div class="subnav item-parent tv-container-vertical">
+      <div class="subnav tv-component tv-container-vertical">
         <i class="icon-chevron-down icon-white"></i>
-        <ul class="tv-container-middle-scroll item">
+        <ul class="tv-container-vertical">
         </ul>
       </div>
     </div>
@@ -80,12 +80,14 @@
   {% include device['script'] %}
 {% endif %}
 
+{#
 <script>
 	var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
 	(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
 	g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
 	s.parentNode.insertBefore(g,s)}(document,'script'));
 </script>
+#}
 
 </body>
 </html>

@@ -4,6 +4,7 @@ UI = {
   topbar: null,
   currentRoute: 'splash',
   historyRoutes: [],
+  badge_notification: '<span class="badge badge-important">%count%</span>',
   init: function() {
     this.topbar = $('#topbar');
   },
@@ -18,7 +19,9 @@ UI = {
       switch (view) {
         case 'splash':
           $('.template').hide();
+          $('.nav ul, .subnav ul').empty();
           $('#splash').fadeIn('slow');
+          UI.focus($('#splash .icon:first-child'));
         break;
         case 'popin':
           url = API.config.popin + route + '?';
@@ -54,15 +57,20 @@ UI = {
       break;
     }
 
-    Couchmode.timeout = null;
-    $('.item', UI.topbar).empty();
+    clearTimeout(Couchmode.timeout);
+    $('.nav ul, .subnav ul', UI.topbar).empty();
     UI.topbar.show();
-    
+
     if (typeof callback != 'undefined') {
       callback();
     }
   },
   loadUser: function() {
+  },
+  focus: function(elmt) {
+    $('.tv-component-focused').removeClass('tv-component-focused');
+    elmt.addClass('tv-component-focused');
+    elmt.focus();
   },
   historyBack: function() {
     this.load(this.historyRoutes.slice(0,1));
