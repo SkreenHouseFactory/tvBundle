@@ -20,6 +20,7 @@ Couchmode = {
     if (args.onglet == 'show') {
       this.elmt.show();
     } else {
+      args = $.extend(args, {img_width: 150, img_height: 200});
       API.query('GET',
                 'couchmode.json',
                 args,
@@ -38,13 +39,16 @@ Couchmode = {
     self.active_slider = null;
     //load
     this.loadMenu(datas.menu);
-    this.loadSliders(datas.sliders, function(){
-      console.log('Couchmode.init', 'callback');
-      self.active_slider = $('.slider', self.sliders).slice(0,1);
-      self.active_slider.addClass('current');
-      self.active_slider.next().addClass('down');
-      self.elmt.show()
-      self.play();
+    this.loadSliders(datas.sliders, function(slider){
+      console.log('Couchmode.init', 'callback', $('.slider', self.sliders));
+      if (self.active_slider == null) {
+        self.active_slider = slider;
+        self.active_slider.addClass('current');
+        self.elmt.show()
+        self.play();
+      } else {
+        slider.addClass('down');
+      }
     });
   },
   idle: function() {
@@ -85,6 +89,7 @@ Couchmode = {
       for (key in menu.nav) {
         nav.append('<li data-load-route="' + menu.nav[key]  + '" class="tv-component' + (key == 0 ? ' selected' : '') + '"><a href="#">' + menu.nav[key]  + '</a></li>');
       }
+      $('.nav').show();
     } else {
       $('.nav').show();
     }
@@ -97,29 +102,32 @@ Couchmode = {
     }*/
   },
   loadSliders: function(datas, callback) {
+    var self = this;
     console.log('Couchmode.loadSliders', datas);
     for (key in datas) {
-      var slider = new BaseSlider({
-                                   title: datas[key].name, 
-                                   data_id: datas[key].id
-                                  }, 
-                                  function(){
-                                    console.log('Couchmode.loadSliders', 'callback');
-                                    if (typeof callback != 'undefined') {
-                                      callback();
-                                    }
-                                  });
-      this.sliders.append(slider.render().addClass('couchmode'));
+      new BaseSlider({
+                        title: datas[key].name, 
+                        data_id: datas[key].id,
+                        programs: datas[key].programs
+                      }, 
+                      function(slider){
+                        console.log('Couchmode.loadSliders', 'callback');
+                        self.sliders.append(slider.addClass('couchmode'));
+                        if (typeof callback != 'undefined') {
+                          callback(slider);
+                        }
+                      });
     }
   },
   play: function(li) {
     if (typeof this.player == 'undefined') {
       this.player = $('#couchmode-player');
     }
-    var li = typeof li != 'undefined' ? li : $('li:first-child', this.active_slider);
+    var li = typeof li != 'undefined' ? li : $('li:first', this.active_slider);
     UI.focus(li); //li.addClass('tv-component-focused');
-    console.log('Couchmode.play', li);
+    console.log('Couchmode.play', li, this.active_slider);
     Player.playProgram(li.data('id'), this.player);
+    // TODO : Player.loadMetaProgram({title: li.find('.title').text(), format:'', year:''});
     this.player.data('playing-id', li.data('id'))
   },
   slideV: function(slider, direction) {
