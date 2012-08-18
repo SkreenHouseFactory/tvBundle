@@ -11,7 +11,6 @@
 	<meta name="description" content="{% block description %}{% endblock %}">
 	<meta name="author" content="SkreenHouseFactory">
 	<meta name="language" content="fr-FR" />
-	<meta name="viewport" content="width=device-width">
 	<meta name="robots" content="noindex,nofollow">
 	{% block meta %}{% endblock %}
 
@@ -39,28 +38,28 @@
 <body>
 <!--[if lt IE 7]><p class=chromeframe>Votre navigateur est <em>ancien!</em> <a href="http://browsehappy.com/">Mettez-le à jour</a> ou <a href="http://www.google.com/chromeframe/?redirect=true">installez Google Chrome Frame</a> pour profiter utiliser mySkreen dans les meilleurs conditions.</p><![endif]-->
 
-    {% include 'SkreenHouseFactoryV3Bundle:Main:_modal.html.twig' %}
-    <div id="topbar" class="template overlay tv-container-horizontal">
-      <div class="logo tv-component" data-load-route="splash" data-load-view="splash"><img src="{{ asset('bundles/skreenhousefactorytv/images/ecrans.png') }}" /></div>
-      <div class="onglet"><span></span></div>
-      <div class="nav tv-component tv-container-vertical">
-        <i class="icon-chevron-down icon-white"></i>
-        <ul class="tv-container-vertical">
-        </ul>
-      </div>
-      <div class="subnav tv-component tv-container-vertical">
-        <i class="icon-chevron-down icon-white"></i>
-        <ul class="tv-container-vertical">
-        </ul>
-      </div>
+
+  {% include 'SkreenHouseFactoryV3Bundle:Main:_modal.html.twig' %}
+  <div id="topbar" class="template overlay">
+    <div class="logo tv-component" data-load-route="splash" data-load-view="splash"><img src="{{ asset('bundles/skreenhousefactorytv/images/ecrans.png') }}" /></div>
+    <div class="onglet"><span></span></div>
+    <div class="nav">
+      <i class="icon-chevron-down icon-white"></i>
+      <ul class="keynav-container-vertical"></ul>
     </div>
-    <div id="sliders" class="template"></div>
-    <div id="redirect" class="template"></div>
-    {% include 'SkreenHouseFactoryTvBundle:Main:_couchmode.html.twig' %}
+    <div class="subnav">
+      <i class="icon-chevron-down icon-white"></i>
+      <ul class="keynav-container-vertical"></ul>
+    </div>
+  </div>
+  <div id="sliders" class="template">
+    <div class="container"></div>
+  </div>
+  {#<div id="redirect" class="template"></div>#}
+  {% include 'SkreenHouseFactoryTvBundle:Main:_couchmode.html.twig' %}
 
-    {% block content %}
-    {% endblock %}
-
+  {% block content %}
+  {% endblock %}
 
 {% javascripts
     '@SkreenHouseFactoryV3Bundle/Resources/public/initializr/js/libs/modernizr-2.5.3-respond-1.1.0.min.js'
@@ -70,11 +69,11 @@
     '@SkreenHouseFactoryV3Bundle/Resources/public/js/vendors/*'
     '@SkreenHouseFactoryV3Bundle/Resources/public/js/core/*'
     '@SkreenHouseFactoryTvBundle/Resources/public/js/*' 
+    '@SkreenHouseFactoryTvBundle/Resources/public/js/vendors/jquery.keynav.js'
     filter='?yui_js' 
     output='js/compiled/tv.js'  %}
     <script src="{{ asset_url }}"></script>
 {% endjavascripts %}
-
 
 {% if device['script'] is defined %}
   {% include device['script'] %}

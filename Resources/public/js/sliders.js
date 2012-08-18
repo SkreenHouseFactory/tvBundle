@@ -2,24 +2,39 @@
 var Sliders;
 Sliders = {
   elmt: null,
-  topbar: null,
+  sliders: null,
   params: {img_width: 150,
          img_height: 200},
-  nav: {replay: ['&nbsp;', 'Plus d\'une semaine', 'La semaine dernière', 'Hier', 'Hier soir', 'En ce moment', 'Ce soir', 'Demain', 'Cette semaine', 'Au delà']
+  nav: {replay: ['&nbsp;', 
+                 'Plus d\'une semaine', 
+                 'La semaine dernière', 
+                 'Hier', 
+                 'Hier soir', 
+                 'En ce moment', 
+                 'Ce soir', 
+                 'Demain', 
+                 'Cette semaine', 
+                 'Au delà']
   },
-  subnav: {replay: ['Tous les genres', 'Films', 'Documentaires', 'Séries', 'Emissions', 'Sport', 'Spectacles']
+  subnav: {replay: ['Tous les genres', 
+                    'Films', 
+                    'Documentaires', 
+                    'Séries', 
+                    'Emissions', 
+                    'Sport', 
+                    'Spectacles']
   },
   init: function(action, args) {
     var self = this;
     console.log('Sliders.init', action, args);
     this.elmt = $('#sliders');
-    this.topbar = $('#topbar');
-    
-    this.elmt.empty();
-    this.ui(action, args, function(){
-      UI.focus($('li:first', self.elmt)); //.addClass('tv-component-focused');
-    });
+    this.sliders = $('.container', this.elmt);
+    this.sliders.empty();
     this.elmt.fadeIn();
+
+    this.ui(action, args, function(){
+      UI.focus($('li:first', self.sliders)); //.addClass('tv-component-focused');
+    });
   },
   ui: function(action, args, callback) {
     var self = this;
@@ -32,33 +47,43 @@ Sliders = {
       break;
     }
   },
-  load: function(title, programs, args) {
+  load: function(title, programs, args, callback, sliders_length) {
     var self = this;
-    //console.log('Sliders.load', title, programs);
+    console.log('Sliders.load', title, programs);
     var args = $.extend(args, {title: title,
                                programs: programs,
                                scroll: args.scroll});
-    var slider = new BaseSlider(args);
-    
-
-    this.elmt.append(slider.render());
+    new BaseSlider(args, function(slider){
+      if ($('.slider', self.sliders).length >= 2) {
+        slider.addClass('slide-v')
+      }
+      self.sliders.append(slider.addClass('sliders slide-h'));
+      console.log('Sliders.load', 'callback', $('.slider', self.sliders).length, sliders_length);
+      if (typeof callback != 'undefined' && $('.slider', self.sliders).length == sliders_length) {
+        callback();
+      }
+    });
   },
   initTvreplay: function(args, callback) {
     var self = this;
     if (typeof args.keep_nav == 'undefined') {
       this.loadMenuTvReplay();
     }
-    var args = $.extend(this.params, args, {with_best_offer: 1});
-    
+    var params = $.extend({with_best_offer: 1, 
+                  keep_nav: args.keep_nav, 
+                  scroll: args.scroll, 
+                  nav: typeof args.nav != 'undefined' ? args.nav : '', 
+                  subnav: typeof args.subnav != 'undefined' ? args.subnav : ''}, this.params);
+
     API.query('GET',
               'schedule/tvreplay.json',
-              args,
+              params,
               function(datas){
+                var datas = $.makeArray(datas);
                 for (k in datas) {
-                  console.log('Sliders.load', 'slider', datas[k]);
-                  self.load(datas[k].title, datas[k].programs, args);
+                  console.log('Sliders.initTvreplay', 'slider', datas[k]);
+                  self.load(datas[k].title, datas[k].programs, args, callback, datas.length);
                 }
-                callback();
               }, 
               true, 
               2);
@@ -68,12 +93,11 @@ Sliders = {
     //this.elmt.prepend($('#splash [data-load-route="search"]').clone()).addClass('search');
     var sliders = ['Archives','Documentaires','Emissions','Films','Spectacles','Séries'];
     var q = $('[data-load-route="search"]').val();
-    var args = $.extend(this.params, args, {offset:0, nb_results: 10});
+    $.extend(this.params, {offset:0, nb_results: 10, keep_nav: args.keep_nav, scroll: args.scroll});
     $('.onglet span', UI.topbar).html('Recherche : ' + q);
-    $('.nav, .subnav').hide();
     API.query('GET',
               'search/' + q + '.json',
-              args,
+              this.params,
               function(datas){
                 for (k in datas) {
                     console.log('Sliders.load', 'slider', k, datas[k]);
@@ -92,17 +116,18 @@ Sliders = {
   },
   loadMenuTvReplay: function() {
     console.log('Sliders.loadMenuTvReplay', this.nav.replay, this.subnav.replay);
-    $('.onglet span', this.topbar).html('TV & Replay');
-    $('.nav, .subnav').show();
-    var nav = $('.nav ul', this.topbar);
-    var subnav = $('.subnav ul', this.topbar);
+    $('.onglet span', UI.topbar).html('TV & Replay');
+    //nav
+    var nav = $('.nav ul', UI.topbar);
     for (key in this.nav.replay) {
-      nav.append('<li class="tv-component' + (key == 5 ? ' selected' : '') + '" data-load-view="sliders" data-load-route="tv-replay" data-keep-nav="1" data-nav="' + this.nav.replay[key]  + '">' + this.nav.replay[key]  + '</li>');
+      nav.append('<li class="tv-component tv-component-vertical' + (key == 5 ? '  tv-component-vertical-selected' : '') + '" data-load-view="sliders" data-load-route="tv-replay" data-keep-nav="1" data-nav="' + this.nav.replay[key]  + '">' + this.nav.replay[key]  + '</li>');
     }
-    $('.nav').show();
+    //subnav
+    var subnav = $('.subnav ul', UI.topbar);
     for (key in this.subnav.replay) {
-      subnav.append('<li class="tv-component' + (key == 0 ? ' selected' : '') + '" data-load-view="sliders" data-load-route="tv-replay" data-keep-nav="1" data-subnav="' + this.subnav.replay[key]  + '">' + this.subnav.replay[key]  + '</li>');
+      subnav.append('<li class="tv-component tv-component-vertical' + (key == 0 ? '  tv-component-vertical-selected' : '') + '" data-load-view="sliders" data-load-route="tv-replay" data-keep-nav="1" data-subnav="' + this.subnav.replay[key]  + '">' + this.subnav.replay[key]  + '</li>');
     }
-    $('.subnav').show();
-  },
+
+    $('.nav, .subnav').addClass('tv-container-vertical').show();
+  }
 }

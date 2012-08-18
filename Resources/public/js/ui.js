@@ -4,6 +4,7 @@ UI = {
   topbar: null,
   userblock: null,
   currentRoute: 'splash',
+  currentView: 'splash',
   historyRoutes: [],
   badge_notification: '<span class="badge badge-important">%count%</span>',
   init: function() {
@@ -13,64 +14,78 @@ UI = {
   load: function(route, view, args) {
     var self = this;
     var args = typeof args != 'undefined' ? args : {};
-    console.log('UI.load', route, view, args);
 
-    this.unload(this.currentRoute, args, function(){
-      self.historyRoutes.push(self.currentRoute);
-      self.currentRoute = route;
-      switch (view) {
-        case 'splash':
-          $('.nav ul, .subnav ul').empty();
-          $('.template').hide();
-          $('#splash').fadeIn('slow');
-          UI.focus($('#splash .icon:first'));
-          console.log('UI.load', 'splash', this.topbar);
-        break;
-        case 'popin':
-          url = API.config.popin + route + '?';
-          for (var key in args) {
-            url += key + '=' + args[key] + '&';
-          }
-          API.launchModal(url)
-        break;
-        case 'sliders':
-          $('#topbar').show();
-          Sliders.init(route, args);
-        break;
-        case 'list':
-          $('#topbar').show();
-          List.init(route);
-        break;
-        default:
-          $('#topbar').show();
-          if (route == 'playlist' && !Skhf.session.datas.email) {
-            self.load('splash', 'splash');
-            return API.quickLaunchModal('signin', function() {
-              Couchmode.init({onglet: route, session_uid: Skhf.session.uid});
-            });
-          }
-          Couchmode.init({onglet: route, session_uid: Skhf.session.uid});
-        break;
-      }
-    });
+    if (typeof view == 'undefined') {
+      var view = 'couchmode';
+    }
+
+    this.unloadView(this.currentRoute, view, args, 
+                    function() {
+                      self.loadView(route, view, args);
+                    });
   },
-  unload: function(route, args, callback) {
-    //hide current view
-    switch (route) {
-      default:
-        $('#' + route).fadeOut();
+  loadView: function(route, view, args){
+    var self = this;
+    this.historyRoutes.push(this.currentRoute);
+    this.currentRoute = route;
+    this.currentView = view;
+    console.log('UI.load', 'callback', route, view, args);
+    switch (view) {
+      case 'splash':
+        $('#sliders, #couchmode').hide();
+        $('#splash').fadeIn('slow');
+        self.focus($('#splash .icon:first'));
+        self.topbar.hide();
+        console.log('UI.load', 'splash', this.topbar);
       break;
+      case 'popin':
+        Webview.postMessage(['player', 'pause']);
+        url = API.config.popin + route + '?';
+        for (var key in args) {
+          url += key + '=' + args[key] + '&';
+        }
+        API.launchModal(url)
+      break;
+      case 'sliders':
+        $('#splash, #couchmode').hide();
+        self.topbar.show();
+        Sliders.init(route, args);
+      break;
+      default:
+        $('#splash, #sliders').hide();
+        self.topbar.show();
+        if (route == 'playlist' && !Skhf.session.datas.email) {
+          this.load('splash', 'splash');
+          API.quickLaunchModal('signin', function() {
+            self.loadUser();
+            if (Skhf.session.datas.email) {
+              self.loadView(route, view, $.extend(args, {nofocus: true}));
+            }
+          });
+          return false;
+        }
+        Couchmode.init({onglet: route, session_uid: Skhf.session.uid, program_id: args.program_id, nav: args.nav});
+      break;
+    }
+  },
+  unloadView: function(route, view, args, callback) {
+    console.log('UI.unload', route, view, args, 'modal:' + $('.modal').hasClass('hide'));
+
+    //modal
+    if ($('.modal').hasClass('in') == true) {
+      $('.modal').modal('hide');
     }
 
     //couchmode
     clearTimeout(Couchmode.timeout);
     Couchmode.active_slider = null;
-    
+    Webview.postMessage(['player','stop']);
+    Webview.postMessage(['fullscreen']);
+
     //topbar
-    if (typeof args.keep_nav == 'undefined') {
+    if (typeof args.keep_nav == 'undefined' && view != 'popin') {
       //$('.nav ul, .subnav ul', UI.topbar).empty();
-      $('.nav, .subnav', UI.topbar).hide().find('ul').empty();
-      UI.topbar.show();
+      $('.nav, .subnav', this.topbar).hide().find('ul').empty();
     }
 
     //callback
@@ -80,20 +95,31 @@ UI = {
   },
   loadUser: function() {
     if (Skhf.session.datas.email) {
-      this.userblock.html(Skhf.session.datas.email + ' | <a class="tv-component signout" href="#">Déconnexion</a>');
+      $('.user', this.userblock).html(Skhf.session.datas.email);
+      this.userblock.show();
     } else {
-      this.userblock.empty();
+      $('.user', this.userblock).empty();
+      this.userblock.hide();
     }
   },
-  focus: function(elmt) {
-    $('.tv-component-focused').removeClass('tv-component-focused');
-    elmt.addClass('tv-component-focused');
-    if (elmt.attr('type') != 'radio') {
-      elmt.focus();
+  loadUserPrograms: function(ids, elmt) {
+    var ids  = typeof ids  != 'undefined' ? ids  : Skhf.session.datas.queue;
+    var elmt = typeof elmt != 'undefined' ? elmt : $('body');
+    console.log('UI.loadUserPrograms', ids, elmt);
+    for (key in ids) {
+      console.log('UI.loadUserPrograms', ids[key], '.actions[data-id="' + ids[key] + '"] a.fav:not(.btn-primary)');
+      $('.actions[data-id="' + ids[key] + '"] a.fav:not(.btn-primary)', elmt).html('<i class="icon-ok-sign icon-white"></i> Dans vos favoris')
+                                                                            .addClass('btn-primary');
     }
   },
-  historyBack: function() {
-    this.load(this.historyRoutes.slice(0,1));
+  unloadUserPrograms: function(ids, elmt) {
+    var elmt = typeof elmt != 'undefined' ? elmt : $('body');
+    console.log('UI.unloadUserPrograms', ids, elmt);
+    for (key in ids) {
+      console.log('UI.loadUserPrograms', ids[key], '.actions[data-id="' + ids[key] + '"] a.fav:not(.btn-primary)');
+      $('.actions[data-id="' + ids[key] + '"] a.fav.btn-primary, .actions[data-id="' + ids[key] + '"] a.fav.btn-danger', elmt).html('<i class="icon-plus-sign"></i> Suivre / voir + tard')
+                                                                      .removeClass('btn-primary');
+    }
   },
   togglePlaylistProgram: function(trigger){
     var value = trigger.parent().data('id');
@@ -111,6 +137,48 @@ UI = {
       API.quickLaunchModal('signin', function(){
         Skhf.session.sync();
       });
+    }
+  },
+  historyBack: function() {
+    this.load(this.historyRoutes.slice(0,1));
+  },
+  focus: function(elmt, frame) {
+    if (typeof elmt == 'undefined' || elmt.length == 0) {
+      console.error('UI.focus', 'undefined');
+      return false;
+    }
+    console.log('UI.focus', elmt, frame + ' .tv-component:visible');
+    elmt.removeClass('tv-component-unfocused').addClass('tv-component-focused');
+    $.keynav.reset();
+    frame = typeof frame != 'undefined' ? frame : 'body';
+    $(frame + ' .tv-component:visible').keynav('tv-component-focused', 'tv-component-unfocused', 'tv-component-vertical');
+  },
+  getFocusedElmt: function() {
+    return $('.tv-component-focused:first');
+  },
+  slideV: function(slider, direction) {
+    console.log('UI.slideV', direction, slider.next('.slider'), slider.prev('.slider'));
+    $('.slider', slider.parent()).removeClass('down up current');
+    if (direction == 'down' && slider.next('.slider').length > 0) {
+      slider.parent().animate({top: '-=240'}, 1000, function(){
+        slider.addClass('down');
+        slider.prev('.slider').addClass('current');
+        slider.prev('.slider').prev('.slider').addClass('up');
+      });
+    } else if (slider.prev('.slider').length > 0) {
+      slider.parent().animate({top: '+=240'}, 1000, 'linear',function() {
+        slider.addClass('up');
+        slider.next('.slider').addClass('current');
+        slider.next('.slider').next('.slider').addClass('down');
+      });
+    }
+  },
+  slideH: function(slider, direction) {
+    console.log('Couchmode.slideH', slider, direction);
+    if (direction == 'left') {
+      $('ul', slider).animate({left: '+=155'}, 500, 'crazy');
+    } else {
+      $('ul', slider).animate({left: '-=155'}, 500, 'linear');
     }
   }
 }
