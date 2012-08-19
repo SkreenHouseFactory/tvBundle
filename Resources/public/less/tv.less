@@ -34,13 +34,6 @@ html {
 * {
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);	
 }
-/*
-:focus {
-  outline: 0;
-  border: none;
-  color: rgba(0, 0, 0, 0);
-}
-*/
 
 .tv-component.tv-component-focused {
   border: @focusBorder !important;
@@ -179,9 +172,8 @@ html {
       border-radius: 10px;
       margin-bottom: 10px;
     }
-
-    .icon.tv-component-focused {
-      border: none;
+    .icon.tv-component.tv-component-focused {
+      border: 0 !important;
       -webkit-box-shadow: none;
     }
 
