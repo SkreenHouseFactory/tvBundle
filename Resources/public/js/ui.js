@@ -7,9 +7,12 @@ UI = {
   currentView: 'splash',
   historyRoutes: [],
   badge_notification: '<span class="badge badge-important">%count%</span>',
+  loader: '<div class="progress progress-striped active"><div class="bar" style="width:0%"></div></div>',
   init: function() {
     this.topbar = $('#topbar');
     this.userblock = $('#user');
+    this.nav = $('.nav ul', this.topbar);
+    this.subnav = $('.subnav ul', this.topbar);
   },
   load: function(route, view, args) {
     var self = this;
@@ -29,7 +32,7 @@ UI = {
     this.historyRoutes.push(this.currentRoute);
     this.currentRoute = route;
     this.currentView = view;
-    console.log('UI.load', 'callback', route, view, args);
+    console.log('UI.loadView', 'callback', route, view, args);
     switch (view) {
       case 'splash':
         $('#sliders, #couchmode').hide();
@@ -44,7 +47,15 @@ UI = {
         for (var key in args) {
           url += key + '=' + args[key] + '&';
         }
-        API.launchModal(url)
+        //UI.appendLoader($('.modal .modal-body'));
+        API.launchModal(url, function() {}, function() {
+          console.warn('callbackOnLoad', $('.tv-component-focused'), $('.tv-component-last-focused'));
+          
+          //$('.tv-component-focused').addClass('tv-component-last-focused');
+          $('.modal input').addClass('tv-component tv-input');
+          $('.modal input[type="text"], .modal input.text').attr('autocomplete', 'off');
+          self.focus($('.modal .tv-component:first'), '.modal');
+        })
       break;
       case 'sliders':
         $('#splash, #couchmode').hide();
@@ -69,7 +80,11 @@ UI = {
     }
   },
   unloadView: function(route, view, args, callback) {
-    console.log('UI.unload', route, view, args, 'modal:' + $('.modal').hasClass('hide'));
+    console.log('UI.unloadView', route, view, args, 'modal hidden :' + $('.modal').hasClass('hide'));
+
+    //keynav
+    this.getFocusedElmt().removeClass('tv-component-focused').addClass('tv-component-unfocused');
+    $.keynav.reset();
 
     //modal
     if ($('.modal').hasClass('in') == true) {
@@ -77,14 +92,12 @@ UI = {
     }
 
     //couchmode
-    clearTimeout(Couchmode.timeout);
-    Couchmode.active_slider = null;
-    Webview.postMessage(['player','stop']);
-    Webview.postMessage(['fullscreen']);
+    if (this.currentView == 'couchmode') {
+      Couchmode.unload();
+    }
 
     //topbar
     if (typeof args.keep_nav == 'undefined' && view != 'popin') {
-      //$('.nav ul, .subnav ul', UI.topbar).empty();
       $('.nav, .subnav', this.topbar).hide().find('ul').empty();
     }
 
@@ -147,38 +160,127 @@ UI = {
       console.error('UI.focus', 'undefined');
       return false;
     }
+    if (elmt.hasClass('tv-component-last-focused')) {
+      elmt.removeClass('tv-component-last-focused');
+    }
     console.log('UI.focus', elmt, frame + ' .tv-component:visible');
-    elmt.removeClass('tv-component-unfocused').addClass('tv-component-focused');
-    $.keynav.reset();
     frame = typeof frame != 'undefined' ? frame : 'body';
     $(frame + ' .tv-component:visible').keynav('tv-component-focused', 'tv-component-unfocused', 'tv-component-vertical');
+    $.keynav.setActive(elmt.get(0));
+    //elmt.removeClass('tv-component-unfocused').addClass('tv-component-focused');
   },
   getFocusedElmt: function() {
-    return $('.tv-component-focused:first');
+    return $($.keynav.getCurrent());
+    //return $('.tv-component-focused:first');
   },
   slideV: function(slider, direction) {
-    console.log('UI.slideV', direction, slider.next('.slider'), slider.prev('.slider'));
+    console.log('UI.slideV', direction, slider.next('.slider.slide-v'), slider.prev('.slider.slide-v'));
     $('.slider', slider.parent()).removeClass('down up current');
-    if (direction == 'down' && slider.next('.slider').length > 0) {
-      slider.parent().animate({top: '-=240'}, 1000, function(){
+    if (direction == 'down' && slider.next('.slider.slide-v').length > 0) {
+      //slider.parent().css({top: '-=240'});
+      slider.parent().animate({top: '-=240'}, 200, 'linear', function(){
         slider.addClass('down');
-        slider.prev('.slider').addClass('current');
-        slider.prev('.slider').prev('.slider').addClass('up');
+        slider.prev('.slider.slide-v').addClass('current');
+        slider.prev('.slider.slide-v').prev('.slider.slide-v').addClass('up');
       });
-    } else if (slider.prev('.slider').length > 0) {
-      slider.parent().animate({top: '+=240'}, 1000, 'linear',function() {
+    } else if (direction == 'up' && slider.prev('.slider.slide-v').length > 0) {
+      //slider.parent().css({top: '+=240'});
+      slider.parent().animate({top: '+=240'}, 200, 'linear',function() {
         slider.addClass('up');
-        slider.next('.slider').addClass('current');
-        slider.next('.slider').next('.slider').addClass('down');
+        slider.next('.slider.slide-v').addClass('current');
+        slider.next('.slider.slide-v').next('.slider.slide-v').addClass('down');
       });
     }
   },
   slideH: function(slider, direction) {
-    console.log('Couchmode.slideH', slider, direction);
+    //console.log('Couchmode.slideH', slider, direction);
     if (direction == 'left') {
-      $('ul', slider).animate({left: '+=155'}, 500, 'crazy');
-    } else {
-      $('ul', slider).animate({left: '-=155'}, 500, 'linear');
+      //$('ul', slider).css({left: '+=155'});
+      $('ul', slider).animate({left: '+=155'}, 200, 'crazy');
+    } else if (direction == 'right') {
+      //$('ul', slider).css({left: '-=155'});
+      $('ul', slider).animate({left: '-=155'}, 200, 'linear');
     }
+  },
+  goLeft: function(){
+    var elmt = UI.getFocusedElmt();
+    var slider = elmt.parents('.slide-h:first');
+    if (slider && elmt.data('position') > 3 && parseInt(elmt.parent().data('current-position')) > 0) {
+      console.log('position', 'left', elmt.data('position'), parseInt(elmt.parent().data('current-position')));
+      this.slideH(slider, 'left');
+      elmt.parent().data('current-position', parseInt(elmt.parent().data('current-position'))-1);
+    }
+	  $.keynav.goLeft();
+  },
+  goRight: function(){
+    var elmt = UI.getFocusedElmt();
+    var slider = elmt.parents('.slide-h:first');
+    if (slider && elmt.data('position') >= 3) {
+      console.log('position', 'right', elmt.data('position'), parseInt(elmt.parent().data('current-position')));
+      this.slideH(slider, 'right');
+      elmt.parent().data('current-position', parseInt(elmt.parent().data('current-position'))+1);
+    }
+	  $.keynav.goRight();
+  },
+  goUp: function(){
+    var elmt = UI.getFocusedElmt();
+    //slider
+    var slider = elmt.parents('.slide-v:first');
+    if (slider.length > 0) {
+      this.slideV(slider, 'up');
+    }
+    //data-slide-v
+    if (elmt.data('slide-v-step')) {
+      console.log('goUp', elmt, elmt.parents('.tv-container-vertical:first'));
+      elmt.parents('.tv-container-vertical:first').animate({top: '+=' + elmt.data('slide-v-step')}, 200);
+    }
+	  $.keynav.goUp();
+  },
+  goDown: function(){
+    var elmt = UI.getFocusedElmt();
+    //slider
+    var slider = elmt.parents('.slide-v:first');
+    if (slider.length > 0) {
+      this.slideV(slider, 'down');
+    }
+    //data-slide-v
+    if (elmt.data('slide-v-step')) {
+      console.log('goDown', elmt, elmt.parents('.tv-container-vertical:first'));
+      elmt.parents('.tv-container-vertical:first').animate({top: '-=' + elmt.data('slide-v-step')}, 200);
+    }
+	  $.keynav.goDown();
+  },
+  goEnter: function(){
+    this.getFocusedElmt().addClass('tv-component-last-focused');
+    
+    console.log('UI.goEnter', $('.tv-component-focused'), $('.tv-component-last-focused'));
+	  $.keynav.activate();
+	  //vertical selected
+    var elmt = this.getFocusedElmt();
+    console.log('script', 'keynav', 'activate', elmt);
+    //btn
+    if (elmt.hasClass('btn')) {
+      console.log('keynav', 'btn', elmt.parent());
+      elmt.parent().find('.btn-primary').removeClass('btn-primary');
+      elmt.addClass('btn-primary');
+    }
+  },
+  goReturn: function(){
+    //btn
+    if ($('.modal').hasClass('in')) {
+      $('.modal').modal('hide');
+    } else {
+      this.load('splash', 'splash', {});
+    }
+  },
+  // -- insert loader
+  appendLoader: function(elmt) {
+    $('.progress', elmt).remove();
+    elmt.append(this.loader);
+    $('.progress .bar', elmt).animate({'width': '100%'}, 5000);
+  },
+  // -- remove loader
+  removeLoader: function(elmt) {
+    elmt.find('.progress').remove();
   }
 }

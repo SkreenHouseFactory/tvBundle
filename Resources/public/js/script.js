@@ -1,59 +1,52 @@
 // -- ready
 $(document).ready(function(){
 
+  //keynav
+  $(document).keydown(function(e) {
+    var key = e.keyCode;
+    //console.warn(['keydown', 'key', key]);
+		switch(key) {
+			//case 68:
+			case 37:
+			  UI.goLeft();
+			  break;
+			//case 84:
+			case 38:
+			  UI.goUp();
+			  break;
+			//case 71:
+			case 39: 
+			  UI.goRight();
+			  break;
+			//case 70:
+			case 40: 
+			  UI.goDown();
+			  break;
+			case 13:
+			  UI.goEnter()
+			  break;
+			case 27:
+			  UI.goReturn()
+			  break;
+		}
+  });
+
   // give first div focus (optional)
   UI.focus($('.tv-component:visible:first'));
-  // Handle enter clicks
-  $('.tv-component-focused').live('click', function() {
-    if ($(this).hasClass('.tv-component-focused-vertical')) {
-      $(this).nextAll('.tv-component-focused-vertical').removeClass('.tv-component-focused-vertical');
-      $(this).prevAll('.tv-component-focused-vertical').removeClass('.tv-component-focused-vertical');
-      $(this).addClass('.tv-component-focused-vertical');
-    } else if ($(this).hasClass('btn')) {
-      $(this).parent().find('.btn-primary').removeClass('btn-primary');
-      $(this).addClass('btn-primary');
-    }
-    console.warn('keynav', 'click');
-  });
 
-  //nav vertical sliders couchmode
+  // Couchmode
+  $(window).mousemove(function(e) {
+    //console.log('script', 'mousemove', 'Couchmode.idle', UI.currentView);
+    if (UI.currentView == 'couchmode') {
+      Couchmode.idle();
+    }
+  });
   $(window).keyup(function(e) {
-    console.warn('keyup', e.keyCode);
-    switch (e.keyCode) {
-      case 38: //up
-        var elmt = UI.getFocusedElmt();
-        var slider = elmt.parents('.slider.slide-v:first');
-        console.log(slider);
-        if (slider.length > 0) {
-          UI.slideV(slider, 'up');
-        }
-      break;
-      case 40: //down
-        var elmt = UI.getFocusedElmt();
-        var slider = elmt.parents('.slider.slide-v:first');
-        console.log(slider);
-        if (slider.length > 0) {
-          UI.slideV(slider, 'down');
-        }
-      break;
-      case 37: //left
-        var elmt = UI.getFocusedElmt();
-        var slider = elmt.parents('.slider.slide-h:first');
-        if (slider && elmt.data('position') > 2) {
-          UI.slideH(slider, 'left');
-        }
-      break;
-      case 39: //right
-        var elmt = UI.getFocusedElmt();
-        var slider = elmt.parents('.slider.slide-h:first');
-        if (slider && elmt.data('position') > 3) {
-          UI.slideH(slider, 'right');
-        }
-      break;
+    //console.log('script', 'keyup', 'Couchmode.idle', UI.currentView);
+    if (UI.currentView == 'couchmode') {
+      Couchmode.idle();
     }
   });
-
-
 
   // -- debut script
   Skhf = {
@@ -102,27 +95,17 @@ $(document).ready(function(){
     //e.preventDefault();
     console.log('script', 'nav', $('li.selected', $(this).parent()), $(this))
     //update menu
-    $('li.selected', $(this).parent()).removeClass('selected');
+    $('li.tv-component-vertical-selected', $(this).parent()).removeClass('tv-component-vertical-selected');
     $(this).parent().removeClass('tv-container-show');
-    $(this).addClass('selected')
+    $(this).addClass('tv-component-vertical-selected')
     return false;
   });
 
   // -- modal
-  $('.modal').on('shown', function(e){
-    console.log('script', 'modal', "on('shown')");
-    $('.tv-component-focused:last').removeClass('tv-component-focused').addClass('tv-component-last-focused');
-    
-    setTimeout(function(){
-      $('.tv-component-focused').removeClass('tv-component-focused'); //cancel background focus
-      $('.modal input').addClass('tv-component tv-input');
-      $('.modal input[type="text"], .modal input.text').attr('autocomplete', 'off');
-      UI.focus($('.modal .tv-component:first'), '.modal');
-    }, 2000);
-  });
   $('.modal').on('hide', function(e){
-    console.log('script', 'modal', "on('hide')", $('.last-tv-component-focused'), $('div:not(#toppbar, .modal) .tv-component:first'));
+    console.log('script', 'modal', "on('hide')", $('.tv-component-last-focused'));
     UI.focus($('.tv-component-last-focused')); //$('div:not(#toppbar, .modal) .tv-component:first'));
+    Player.resume(Couchmode.player);
   });
   $('.modal .close').live('click', function(e){
     $('.modal').modal('hide');
@@ -131,6 +114,11 @@ $(document).ready(function(){
   // -- routes
   $('[data-load-route]').live('click', function(e) {
     //e.preventDefault();
+
+    if ($(this).hasClass('tv-input') && !$(this).val()) {
+      console.warn('script', 'tv-input', 'empty');
+      return false;
+    }
 
     var args = {};
     if ($(this).data('slider-scroll')) {
@@ -154,8 +142,8 @@ $(document).ready(function(){
     return false;
   });
   $('[data-open-browser]').live('click', function(e) {
-    console.log('script', '[data-open-browser]', $(this).data('open-browser'));
-    Webview.postMessage['browser', $(this).data('open-browser')]
+    console.warn('script', '[data-open-browser]', $(this).data('open-browser'));
+    Webview.postMessage(['browser', $(this).data('open-browser')]);
   });
 
   // -- sliders
@@ -169,10 +157,12 @@ $(document).ready(function(){
     e.preventDefault();
     console.log('script', 'couchmode', 'li click', $(this));
     if (Couchmode.player.data('playing-id') == $(this).data('id')) {
+      Player.pause($('#couchmode-player'));
+      $(this).addClass('tv-component-last-focused');
       UI.load('fiche', 'popin', {id: $(this).data('id')});
     } else {
       Couchmode.play($(this), $('#couchmode-player'));
-      UI.load('show');
+      //UI.load('show');
     }
     return false;
   }); 

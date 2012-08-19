@@ -2,22 +2,24 @@
    Author: Benoît Bergstörm
    ========================================================================== */
 
-@bgBody:      url("/bundles/skreenhousefactorytv/images/liang/bg_home_1280.png") repeat-y;
-@focusBorder: #6391DE solid 2px !important;
+@bgBody: url("/bundles/skreenhousefactorytv/images/liang/bg_home_1280.png") repeat-y;
+@focusBorder: #6391DE solid 4px !important;
 @focusShadow: 0px 0px 10px yellow;
 @focusShadowInset: inset 0px 0px 10px #6391DE;
 
 html {
   background: transparent;
+  padding: 0;
   height: 100%;
-    /*width: 1728px;
-    height: 972px;*/
+  width: 100%;
+  zoom: 0.9;
 
   body {
     font-family: Belleza, Helvetica;
-    padding: 0px;
+    padding: 0;
     height: 100%;
-    background: @bgBody;
+    width: 100%;
+    background: transparent;
     /*background: @bgBody;
     box-shadow: inset 0 1px 200px #444;*/
     overflow: hidden;
@@ -32,11 +34,13 @@ html {
 * {
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);	
 }
+/*
 :focus {
   outline: 0;
-  border:none;
+  border: none;
   color: rgba(0, 0, 0, 0);
 }
+*/
 
 .tv-component.tv-component-focused {
   border: @focusBorder !important;
@@ -55,10 +59,53 @@ html {
 
   .modal-header {
     border-bottom: 1px solid #222;
+    
+    .btn-group {
+      margin: 9px 0;
+    }
+  }
+  .modal-body {
+    height: 350px;
+    overflow: hidden;
+    position: relative;
+
+    .fav {
+      display: none;
+    }
+
+    #part-body-left {
+      overflow: hidden;
+      
+      .tv-container-vertical {
+        position: absolute;
+        width: 95%;
+        z-index: 0;
+        
+        h6 {
+          font-size: 13px;
+        }
+        
+      }
+    }
   }
   .modal-footer {
     background-color: #000;
     border-top: 1px solid #222;
+  }
+
+  .close {
+    display: none;
+  }
+
+  .nav-tabs {
+    border-bottom: none;
+  }
+  .modal-footer {
+    border: none;
+  }
+
+  .table tr.tv-component-focused th, .table tr.tv-component-focused td {
+    border-top: 0 !important;
   }
 
   .table-striped tbody tr:nth-child(odd) td, .table-striped tbody tr:nth-child(odd) th {
@@ -103,6 +150,7 @@ html {
   height: 100%;
   color: white;
   font-size: 1.2em;
+  background: @bgBody;
 
   > div {
     clear: both;
@@ -121,6 +169,7 @@ html {
   #icons {
     margin-top: 5%;
     height: 120px;
+    padding: 0 100px;
 
     .icon {
       display: inline-block;
@@ -160,17 +209,6 @@ html {
     .icon-playlist.tv-component-focused {
       background: url("/bundles/skreenhousefactorytv/images/liang/btn_playlists_on_1280.png");
     }
-    
-    .icon:focus, .icon:hover, .icon {
-
-      .item.item-selected {
-        color: yellow;
-        
-        .img {
-          box-shadow: @focusShadow;
-        }
-      }
-    }
   }
 
   #search {
@@ -187,7 +225,7 @@ html {
       font-size: 1.3em;
       color: #333;
     }
-    input:focus, input.item-selected {
+    input:focus {
       box-shadow: @focusShadowInset;
     }
   }
@@ -274,7 +312,7 @@ html {
     z-index: 1;
     bottom: 0;
     overflow-y: hidden;
-    
+
     .cache {
       background: black;
       height: 100%;
@@ -314,14 +352,26 @@ html {
   #couchmode-player {
     width: 100%;
     height: 100%;
+
+    .progress {
+      margin: 20%;
+    }
   }
 }
 
 #sliders {
-  padding-top: 50px;
+  background: @bgBody;
+  height: 100%;
+  width: 100%;
+
   .container {
     width: 100%;
+    padding-top: 50px;
     position: absolute;
+
+    .progress {
+      margin: 20%;
+    }
     
     .slider {
       height: 240px;

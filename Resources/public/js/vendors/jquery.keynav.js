@@ -13,36 +13,11 @@
   $.keynav = new Object();
 
   $.fn.keynav = function (onClass,offClass,verticalClass) {
+
 	  //Initialization
 	  var kn = $.keynav;
 	  if(!kn.init) {
 		  kn.el = new Array();
-
-		  $(document).keydown(function(e) {
-      var key = 0;
-      if (e == null) {
-        key = event.keyCode;
-      } else { // mozilla
-        key = e.which;
-      }
-			switch(key) {
-				case 37: 
-				  $.keynav.goLeft();
-				  break;
-				case 38: 
-				  $.keynav.goUp();
-				  break;
-				case 39: 
-				  $.keynav.goRight();
-				  break;
-				case 40: 
-				  $.keynav.goDown();
-				  break;
-				case 13: 
-				  $.keynav.activate();
-				  break;
-			}
-		  });
 		  kn.init = true;
 	  }
 
@@ -51,6 +26,7 @@
 	  });
   }
   $.fn.keynav_sethover = function(onClass,offClass) {
+    //console.warn('keynav_sethover');
 	  return this.each(function() {
 		this.onClass = onClass;
 		this.offClass = offClass;
@@ -68,10 +44,18 @@
 	  e.onClass = onClass;
 	  e.offClass = offClass;
 	  e.verticalClass = verticalClass;
-	  e.onmouseover = function (e) { $.keynav.setActive(this); };
+	  e.onmouseover = function (e) {
+      if (typeof Webview == 'undefined') {
+       console.warn(['keynav', 'onmouseover', e]);
+	     $.keynav.setActive(this);
+      } else {
+       console.warn(['keynav', 'onmouseover', e, 'skiped']);
+      }
+	  };
 	  kn.el.push(e);
   }
   $.keynav.setActive = function(e, fromKeyb) {
+    //console.warn(['keynav', 'setActive', e, fromKeyb]);
 	  var kn = $.keynav;
 	  var cur = $.keynav.getCurrent();
 	  $(cur).trigger('blur');
@@ -95,6 +79,7 @@
 	  kn.currentEl = e;
   }
   $.keynav.getCurrent = function () {
+    //console.warn(['keynav', 'getCurrent', $.keynav.currentEl]);
 	  var kn = $.keynav;
 	  if(kn.currentEl) {
 		  var cur = kn.currentEl;
@@ -135,6 +120,16 @@
   }
   $.keynav.goLeft = function () {
 	  var cur = $.keynav.getCurrent();
+	  
+    if ($(cur).hasClass(cur.verticalClass) == false) {
+  	  var prev = $(cur).prev('.' + cur.offClass);
+  	  //console.log('keynav', 'goLeft', $(cur), prev);
+  	  if (prev.length > 0) {
+  	   $.keynav.setActive(prev.get(0), true);
+  	   return;
+  	  }
+    }
+	  
 	  var quad = $.keynav.quad(cur,function (dx,dy) { 
 										if((dy >= 0) && (Math.abs(dx) - dy) <= 0)
 											return true;	
@@ -145,6 +140,16 @@
   }
   $.keynav.goRight = function () {
 	  var cur = $.keynav.getCurrent();
+	  
+    if ($(cur).hasClass(cur.verticalClass) == false) {
+  	  var next = $(cur).next('.' + cur.offClass);
+  	  //console.log('keynav', 'goRight', $(cur), next);
+  	  if (next.length > 0) {
+  	   $.keynav.setActive(next.get(0), true);
+  	   return;
+  	  }
+    }
+	  
 	  var quad = $.keynav.quad(cur,function (dx,dy) { 
 										if((dy <= 0) && (Math.abs(dx) + dy) <= 0)
 											return true;	
@@ -156,6 +161,16 @@
 
   $.keynav.goUp = function () {
 	  var cur = $.keynav.getCurrent();
+	  
+    if ($(cur).hasClass(cur.verticalClass)) {
+	    //console.log('keynav', 'goUp', 'vertical', $(cur).prev('.' + cur.offClass));
+  	  var prev = $(cur).prev('.' + cur.offClass);
+  	  if (prev.length > 0) {
+  	   $.keynav.setActive(prev.get(0), true);
+  	   return;
+  	  }
+    }
+
 	  var quad = $.keynav.quad(cur,function (dx,dy) { 
 										if((dx >= 0) && (Math.abs(dy) - dx) <= 0)
 											return true;	
@@ -167,6 +182,16 @@
 
   $.keynav.goDown = function () {
 	  var cur = $.keynav.getCurrent();
+
+    if ($(cur).hasClass(cur.verticalClass)) {
+	    //console.log('keynav', 'goDown', 'vertical', $(cur).next('.' + cur.offClass));
+  	  var next = $(cur).next('.' + cur.offClass);
+  	  if (next.length > 0) {
+  	   $.keynav.setActive(next.get(0), true);
+  	   return;
+  	  }
+    }
+
 	  var quad = $.keynav.quad(cur,function (dx,dy) { 
 										if((dx <= 0) && (Math.abs(dy) + dx) <= 0)
 											return true;	
@@ -178,7 +203,9 @@
 
   $.keynav.activate = function () {
 	  var kn = $.keynav;
-	  $(kn.currentEl).trigger('click');
+	  //$(kn.currentEl).trigger('click');
+	  console.log('keynav', 'activate', kn.currentEl);
+	  $(kn.currentEl).click();
   }
 
   /**

@@ -30,6 +30,7 @@ Sliders = {
     this.elmt = $('#sliders');
     this.sliders = $('.container', this.elmt);
     this.sliders.empty();
+    UI.appendLoader(this.sliders);
     this.elmt.fadeIn();
 
     this.ui(action, args, function(){
@@ -49,13 +50,13 @@ Sliders = {
   },
   load: function(title, programs, args, callback, sliders_length) {
     var self = this;
-    console.log('Sliders.load', title, programs);
     var args = $.extend(args, {title: title,
                                programs: programs,
                                scroll: args.scroll});
+    console.log('Sliders.load', args);
     new BaseSlider(args, function(slider){
-      if ($('.slider', self.sliders).length >= 2) {
-        slider.addClass('slide-v')
+      if ($('.slider', self.sliders).length > 0) {
+        slider.addClass('slide-v').data('slide-v-step', 240);
       }
       self.sliders.append(slider.addClass('sliders slide-h'));
       console.log('Sliders.load', 'callback', $('.slider', self.sliders).length, sliders_length);
@@ -79,10 +80,18 @@ Sliders = {
               'schedule/tvreplay.json',
               params,
               function(datas){
-                var datas = $.makeArray(datas);
+                //loader
+                UI.removeLoader(self.sliders);
+                //sliders
+                nb = 0;
+                for(k in datas) {
+                    if (datas.hasOwnProperty(k)) {
+                        nb++;
+                    }
+                }
                 for (k in datas) {
-                  console.log('Sliders.initTvreplay', 'slider', datas[k]);
-                  self.load(datas[k].title, datas[k].programs, args, callback, datas.length);
+                  console.log('Sliders.initTvreplay', 'slider', datas[k], nb);
+                  self.load(datas[k].title, datas[k].programs, args, callback, nb);
                 }
               }, 
               true, 
@@ -99,6 +108,9 @@ Sliders = {
               'search/' + q + '.json',
               this.params,
               function(datas){
+                //loader
+                UI.removeLoader(self.sliders);
+                //sliders
                 for (k in datas) {
                     console.log('Sliders.load', 'slider', k, datas[k]);
                   if ($.inArray(k, sliders) != -1 && datas[k].length > 0) {
@@ -109,6 +121,11 @@ Sliders = {
                     }
                   }
                 }
+                //menu
+                if (typeof args.keep_nav == 'undefined') {
+                  self.loadMenuSearch(datas.facets);
+                }
+                //callback
                 callback();
               }, 
               true, 
@@ -118,16 +135,28 @@ Sliders = {
     console.log('Sliders.loadMenuTvReplay', this.nav.replay, this.subnav.replay);
     $('.onglet span', UI.topbar).html('TV & Replay');
     //nav
-    var nav = $('.nav ul', UI.topbar);
     for (key in this.nav.replay) {
-      nav.append('<li class="tv-component tv-component-vertical' + (key == 5 ? '  tv-component-vertical-selected' : '') + '" data-load-view="sliders" data-load-route="tv-replay" data-keep-nav="1" data-nav="' + this.nav.replay[key]  + '">' + this.nav.replay[key]  + '</li>');
+      UI.nav.append('<li class="tv-component tv-component-vertical' + (key == 5 ? '  tv-component-vertical-selected' : '') + '" data-load-view="sliders" data-load-route="tv-replay" data-keep-nav="1" data-nav="' + this.nav.replay[key]  + '">' + this.nav.replay[key]  + '</li>');
     }
     //subnav
-    var subnav = $('.subnav ul', UI.topbar);
     for (key in this.subnav.replay) {
-      subnav.append('<li class="tv-component tv-component-vertical' + (key == 0 ? '  tv-component-vertical-selected' : '') + '" data-load-view="sliders" data-load-route="tv-replay" data-keep-nav="1" data-subnav="' + this.subnav.replay[key]  + '">' + this.subnav.replay[key]  + '</li>');
+      UI.subnav.append('<li class="tv-component tv-component-vertical' + (key == 0 ? '  tv-component-vertical-selected' : '') + '" data-load-view="sliders" data-load-route="tv-replay" data-keep-nav="1" data-subnav="' + this.subnav.replay[key]  + '">' + this.subnav.replay[key]  + '</li>');
     }
+    UI.nav.parent().show();
+    UI.subnav.parent().show();
 
-    $('.nav, .subnav').addClass('tv-container-vertical').show();
+    //$('.nav, .subnav').addClass('tv-container-vertical').show();
+  },
+  loadMenuSearch: function(facets) {
+    return;
+    if (facets.access != 'undefined') {
+        console.log('Sliders.loadMenuSearch', facets.access);
+        var access = facets.access.split(';');
+        UI.nav.append('<li class="tv-component tv-component-vertical tv-component-vertical-selected" data-load-view="sliders" data-load-route="search" data-keep-nav="1" data-nav="">Tout</li>');
+      for (k in access) {
+        UI.nav.append('<li class="tv-component tv-component-vertical" data-load-view="sliders" data-load-route="search" data-keep-nav="1" data-nav="' + access[k]  + '">' + access[k].replace('myskreen', 'Google TV').replace('ios', 'iPhone, iPad').replace('externe', 'Autre')  + '</li>');
+      }
+      UI.nav.parent().show();
+    }
   }
 }

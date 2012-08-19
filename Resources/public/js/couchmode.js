@@ -23,9 +23,10 @@ Couchmode = {
     console.log('Couchmode.start', args);
     var self = this;
     this.elmt = $('#couchmode');
-    this.sliders = $('#couchmode-sliders .container', this.elmt);
+    this.sliders = $('#couchmode-sliders .container', this.elmt).empty();
     this.player = $('#couchmode-player', this.elmt).empty();
-    self.elmt.show()
+    UI.appendLoader(this.player, 2000);
+    self.elmt.show();
 
     self.active_slider == null
     if (this.timeout == null) {
@@ -42,7 +43,8 @@ Couchmode = {
                   program_id: args.program_id,
                   nav: args.nav,
                   img_width: 150,
-                  img_height: 200
+                  img_height: 200,
+                  limit: 3
                 },
                 function(json){
                   self.start(json, args);
@@ -73,18 +75,6 @@ Couchmode = {
   idleStart: function() {
     var self = this;
     self.idle();
-
-    $(window).mousemove(function(e) {
-      //if (UI.currentView == 'couchmode') {
-        self.idle();
-      //}
-    });
-
-    $(window).keyup(function(e) {
-      //if (UI.currentView == 'couchmode') {
-        self.idle();
-      //}
-    });
   },
   idle: function() {
     //console.log('Couchmode.idle');
@@ -98,6 +88,7 @@ Couchmode = {
   loadSliders: function(datas, callback) {
     var self = this;
     console.log('Couchmode.loadSliders', datas);
+    var nb_sliders = datas.length;
     for (key in datas) {
       new BaseSlider({
                         title: datas[key].name, 
@@ -106,11 +97,17 @@ Couchmode = {
                         url: datas[key].url
                       }, 
                       function(slider){
-                        self.sliders.append(slider.addClass('couchmode slide-h slide-v'));
-                        //console.log('Couchmode.loadSliders', 'callback', $('.slider', self.sliders).length, datas.length);
-                        if (typeof callback != 'undefined' && $('.slider', self.sliders).length == datas.length) {
-                          //console.log('Couchmode.loadSliders', 'callback', key);
-                          callback();
+                        if ($('ul.items li', slider).length > 0) {
+                          self.sliders.append(slider.addClass('couchmode slide-h slide-v').data('slide-v-step', 240));
+                          //console.log('Couchmode.loadSliders', 'callback', $('.slider', self.sliders).length, datas.length);
+                          if (typeof callback != 'undefined' && $('.slider', self.sliders).length == nb_sliders) {
+                            //console.log('Couchmode.loadSliders', 'callback', key);
+                            callback();
+                          }
+                        } else {
+                          nb_sliders = nb_sliders - 1;
+                          console.warn('Couchmode.loadSliders', 'slider ignored : no programs', slider);
+                          //self.sliders.append(slider.addClass('hide'));
                         }
                       });
     }
@@ -153,14 +150,27 @@ Couchmode = {
     }
   },
   play: function(li) {
+    UI.removeLoader(this.player);
     if (typeof this.player == 'undefined') {
       this.player = $('#couchmode-player');
     }
     var li = typeof li != 'undefined' ? li : $('li:first', this.active_slider);
-    UI.focus(li); //li.addClass('tv-component-focused');
-    console.log('Couchmode.play', li, this.active_slider);
-    Player.playProgram(li.data('id'), this.player);
+    UI.focus(li);
+    var play = Player.playProgram(li.data('id'), this.player);
+    if (play == false) { // pas de vidéo : on lance la popin
+      li.click();
+    }
     // TODO : Player.loadMetaProgram({title: li.find('.title').text(), format:'', year:''});
     this.player.data('playing-id', li.data('id'))
+  },
+  unload: function() {
+    console.log('Couchmode.unload');
+    clearTimeout(this.timeout);
+    this.active_slider = null;
+    this.sliders.css('top', '0px');
+    if (typeof Webview != 'undefined') {
+      Webview.postMessage(['player','stop']);
+      Webview.postMessage(['fullscreen']);
+    }
   }
 }
