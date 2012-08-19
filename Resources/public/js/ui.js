@@ -97,6 +97,8 @@ UI = {
     if (this.currentView == 'couchmode') {
       Couchmode.unload();
     }
+    Player.pause();
+    Player.stop();
     
     //android
     Webview.postMessage(['fullscreen']);
