@@ -168,9 +168,7 @@ Couchmode = {
     clearTimeout(this.timeout);
     this.active_slider = null;
     this.sliders.css('top', '0px');
-    if (typeof Webview != 'undefined') {
-      Webview.postMessage(['player','stop']);
-      Webview.postMessage(['fullscreen']);
-    }
+    Player.pause();
+    Player.stop();
   }
 }

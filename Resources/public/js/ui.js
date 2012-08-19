@@ -54,7 +54,9 @@ UI = {
           //$('.tv-component-focused').addClass('tv-component-last-focused');
           $('.modal input').addClass('tv-component tv-input');
           $('.modal input[type="text"], .modal input.text').attr('autocomplete', 'off');
-          self.focus($('.modal .tv-component:first'), '.modal');
+          setTimeout(function(){
+            self.focus($('.modal .tv-component:first'), '.modal');
+          }, 1000);
         })
       break;
       case 'sliders':
@@ -95,6 +97,9 @@ UI = {
     if (this.currentView == 'couchmode') {
       Couchmode.unload();
     }
+    
+    //android
+    Webview.postMessage(['fullscreen']);
 
     //topbar
     if (typeof args.keep_nav == 'undefined' && view != 'popin') {
