@@ -1,3 +1,15 @@
+// -- init
+API.init(function(){
+  // -- console
+  if( API.config.env != 'dev' ) {
+    console = {
+        log: function() {},
+        warn: function() {},
+        error: function() {}
+    };
+  }
+});
+
 // -- ready
 $(document).ready(function(){
 
@@ -54,16 +66,6 @@ $(document).ready(function(){
   }
 
   // -- init
-  API.init(function(){
-    // -- console
-    if( API.config.console != true ) {
-      console = {
-          log: function() {},
-          warn: function() {},
-          error: function() {}
-      };
-    }
-  });
   UI.init();
 
   // -- session

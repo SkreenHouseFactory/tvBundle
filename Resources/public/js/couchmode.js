@@ -158,7 +158,7 @@ Couchmode = {
     UI.focus(li);
     var play = Player.playProgram(li.data('id'), this.player);
     if (play == false) { // pas de vidéo : on lance la popin
-      li.click();
+      //li.click();
     }
     // TODO : Player.loadMetaProgram({title: li.find('.title').text(), format:'', year:''});
     this.player.data('playing-id', li.data('id'))
