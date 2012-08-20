@@ -16,30 +16,39 @@ $(document).ready(function(){
   //keynav
   $(document).keydown(function(e) {
     var key = e.keyCode;
-    //console.warn(['keydown', 'key', key]);
+    console.warn(['script.keydown', 'key', key]);
 		switch(key) {
 			//case 68:
 			case 37:
+			  //e.preventDefault();
 			  UI.goLeft();
 			  break;
 			//case 84:
 			case 38:
+			  //e.preventDefault();
 			  UI.goUp();
 			  break;
 			//case 71:
 			case 39: 
+			  //e.preventDefault();
 			  UI.goRight();
 			  break;
 			//case 70:
 			case 40: 
+			  //e.preventDefault();
 			  UI.goDown();
 			  break;
 			case 13:
+			  //e.preventDefault();
 			  UI.goEnter()
 			  break;
 			case 27:
+			  //e.preventDefault();
 			  UI.goReturn()
 			  break;
+			//default:
+      //  console.warn(['keydown', 'key', key]);
+			//  break;
 		}
   });
 
@@ -115,7 +124,8 @@ $(document).ready(function(){
 
   // -- routes
   $('[data-load-route]').live('click', function(e) {
-    //e.preventDefault();
+    e.preventDefault();
+    console.warn('[data-load-route]', $(this).data('load-route'));
 
     if ($(this).hasClass('tv-input') && !$(this).val()) {
       console.warn('script', 'tv-input', 'empty');

@@ -46,10 +46,10 @@
 	  e.verticalClass = verticalClass;
 	  e.onmouseover = function (e) {
       if (typeof Webview == 'undefined') {
-       console.warn(['keynav', 'onmouseover', e]);
+       //console.warn(['keynav', 'onmouseover', e]);
 	     $.keynav.setActive(this);
       } else {
-       console.warn(['keynav', 'onmouseover', e, 'skiped']);
+       //console.warn(['keynav', 'onmouseover', e, 'skiped']);
       }
 	  };
 	  kn.el.push(e);
@@ -69,10 +69,10 @@
 
     //vertical
     if ($(e).hasClass(cur.verticalClass)) {
-      //console.log('keynav', 'verticalClass', $(e).parents('.tv-container-vertical:first').find('.' + e.verticalClass));
+      console.warn(['keynav', 'verticalClass', $(e).parents('.tv-container-vertical:first').find('.' + e.verticalClass).length]);
       $(e).parents('.tv-container-vertical:first').find('.' + e.verticalClass).show();
     } else {
-      //console.log('keynav', 'no verticalClass', $('.' + e.verticalClass + ':not(.' + e.verticalClass + '-selected)'));
+      console.log(['keynav', 'no verticalClass', $('.' + e.verticalClass + ':not(.' + e.verticalClass + '-selected)').length]);
       $('.' + e.verticalClass + ':not(.' + e.verticalClass + '-selected)').hide();
     }
 
@@ -204,8 +204,8 @@
   $.keynav.activate = function () {
 	  var kn = $.keynav;
 	  //$(kn.currentEl).trigger('click');
-	  console.log('keynav', 'activate', kn.currentEl);
-	  $(kn.currentEl).click();
+	  //console.warn(['keynav', 'activate', kn.currentEl]);
+	  //$(kn.currentEl).click();
   }
 
   /**

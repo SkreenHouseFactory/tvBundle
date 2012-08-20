@@ -32,7 +32,7 @@ UI = {
     this.historyRoutes.push(this.currentRoute);
     this.currentRoute = route;
     this.currentView = view;
-    console.log('UI.loadView', 'callback', route, view, args);
+    console.warn(['UI.loadView', 'callback', route, view, args]);
     switch (view) {
       case 'splash':
         $('#sliders, #couchmode').hide();
@@ -56,7 +56,7 @@ UI = {
           $('.modal input[type="text"], .modal input.text').attr('autocomplete', 'off');
           setTimeout(function(){
             self.focus($('.modal .tv-component:first'), '.modal');
-          }, 1000);
+          }, 2000);
         })
       break;
       case 'sliders':
@@ -82,7 +82,7 @@ UI = {
     }
   },
   unloadView: function(route, view, args, callback) {
-    console.log('UI.unloadView', route, view, args, 'modal hidden :' + $('.modal').hasClass('hide'));
+    console.warn(['UI.unloadView', route, view, args, 'modal hidden :' + $('.modal').hasClass('hide')]);
 
     //keynav
     this.getFocusedElmt().removeClass('tv-component-focused').addClass('tv-component-unfocused');
@@ -258,19 +258,22 @@ UI = {
 	  $.keynav.goDown();
   },
   goEnter: function(){
-    this.getFocusedElmt().addClass('tv-component-last-focused');
-    
-    console.log('UI.goEnter', $('.tv-component-focused'), $('.tv-component-last-focused'));
-	  $.keynav.activate();
-	  //vertical selected
     var elmt = this.getFocusedElmt();
-    console.log('script', 'keynav', 'activate', elmt);
+    elmt.addClass('tv-component-last-focused');
+
+    console.log('UI.goEnter', $('.tv-component-focused'), $('.tv-component-last-focused'));
+	  //$.keynav.activate()
+
+	  //vertical selected
+    //console.log('script', 'keynav', 'activate', elmt);
     //btn
     if (elmt.hasClass('btn')) {
-      console.log('keynav', 'btn', elmt.parent());
+      //console.log('keynav', 'btn', elmt.parent());
       elmt.parent().find('.btn-primary').removeClass('btn-primary');
       elmt.addClass('btn-primary');
     }
+
+    elmt.click();
   },
   goReturn: function(){
     //btn
