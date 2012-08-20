@@ -128,7 +128,7 @@ $(document).ready(function(){
     console.warn('[data-load-route]', $(this).data('load-route'));
 
     if ($(this).hasClass('tv-input') && !$(this).val()) {
-      console.warn('script', 'tv-input', 'empty');
+      console.warn(['script', 'tv-input', 'empty']);
       return false;
     }
 

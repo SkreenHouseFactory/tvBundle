@@ -82,7 +82,7 @@ UI = {
     }
   },
   unloadView: function(route, view, args, callback) {
-    console.warn(['UI.unloadView', route, view, args, 'modal hidden :' + $('.modal').hasClass('hide')]);
+    console.warn(['UI.unloadView', route, view, 'keep_nav :' + args.keep_nav, 'modal hidden :' + $('.modal').hasClass('hide')]);
 
     //keynav
     this.getFocusedElmt().removeClass('tv-component-focused').addClass('tv-component-unfocused');
@@ -99,7 +99,7 @@ UI = {
     }
     Player.pause();
     Player.stop();
-    
+
     //android
     Webview.postMessage(['fullscreen']);
 
@@ -172,27 +172,28 @@ UI = {
     }
     console.log('UI.focus', elmt, frame + ' .tv-component:visible');
     frame = typeof frame != 'undefined' ? frame : 'body';
+    $('.nav, .subnav').show();
     $(frame + ' .tv-component:visible').keynav('tv-component-focused', 'tv-component-unfocused', 'tv-component-vertical');
     $.keynav.setActive(elmt.get(0));
     //elmt.removeClass('tv-component-unfocused').addClass('tv-component-focused');
   },
   getFocusedElmt: function() {
-    return $($.keynav.getCurrent());
-    //return $('.tv-component-focused:first');
+    //return $($.keynav.getCurrent());
+    return $('.tv-component-focused:first');
   },
   slideV: function(slider, direction) {
     console.log('UI.slideV', direction, slider.next('.slider.slide-v'), slider.prev('.slider.slide-v'));
     $('.slider', slider.parent()).removeClass('down up current');
     if (direction == 'down' && slider.next('.slider.slide-v').length > 0) {
       //slider.parent().css({top: '-=240'});
-      slider.parent().animate({top: '-=240'}, 200, 'linear', function(){
+      slider.parent().animate({top: '-=240'}, 0, 'linear', function(){
         slider.addClass('down');
         slider.prev('.slider.slide-v').addClass('current');
         slider.prev('.slider.slide-v').prev('.slider.slide-v').addClass('up');
       });
     } else if (direction == 'up' && slider.prev('.slider.slide-v').length > 0) {
       //slider.parent().css({top: '+=240'});
-      slider.parent().animate({top: '+=240'}, 200, 'linear',function() {
+      slider.parent().animate({top: '+=240'}, 0, 'linear',function() {
         slider.addClass('up');
         slider.next('.slider.slide-v').addClass('current');
         slider.next('.slider.slide-v').next('.slider.slide-v').addClass('down');

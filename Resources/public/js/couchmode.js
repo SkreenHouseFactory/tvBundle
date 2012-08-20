@@ -130,7 +130,7 @@ Couchmode = {
           nav.append('<li data-keep-nav="1" data-load-route="' + menu.nav[key]  + '" class="tv-component tv-component-vertical' + (key == 0 ? ' tv-component-vertical-selected' : '') + '"><a href="#">' + menu.nav[key]  + '</a></li>');
         }
       }
-      $('.nav').addClass('tv-container-vertical').show();
+      $('.nav').addClass('tv-container-vertical');
     }
     /*
     var subnav = $('.subnav ul', this.topbar);

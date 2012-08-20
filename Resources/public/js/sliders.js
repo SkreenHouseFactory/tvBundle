@@ -142,8 +142,6 @@ Sliders = {
     for (key in this.subnav.replay) {
       UI.subnav.append('<li class="tv-component tv-component-vertical' + (key == 0 ? '  tv-component-vertical-selected' : '') + '" data-load-view="sliders" data-load-route="tv-replay" data-keep-nav="1" data-subnav="' + this.subnav.replay[key]  + '">' + this.subnav.replay[key]  + '</li>');
     }
-    UI.nav.parent().show();
-    UI.subnav.parent().show();
 
     //$('.nav, .subnav').addClass('tv-container-vertical').show();
   },
