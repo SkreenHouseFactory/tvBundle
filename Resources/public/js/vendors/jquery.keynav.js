@@ -56,30 +56,30 @@
   }
   $.keynav.setActive = function(e, fromKeyb) {
     //console.warn(['keynav', 'setActive', e, fromKeyb]);
+    
 	  var kn = $.keynav;
 	  var cur = $.keynav.getCurrent();
-	  $(cur).trigger('blur');
-	  for(var i=0;i<kn.el.length;i++) {
-		  var tmp = kn.el[i];
-      $(tmp).removeClass(tmp.onClass).addClass(tmp.offClass);
+	  if ($(cur).hasClass(cur.offClass + '-input')) {
+	   $(cur).blur();
 	  }
+
+    $(cur).removeClass(e.onClass).addClass(e.offClass);
     $(e).removeClass(e.offClass).addClass(e.onClass);
-	  $(e).trigger('focus');
-	  if (fromKeyb) $(e).trigger('keynav:focus');
+    UI.focus($(e), true);
 
     //vertical
     if ($(e).hasClass(cur.verticalClass)) {
-      console.warn(['keynav', 'verticalClass', $(e).parents('.tv-container-vertical:first').find('.' + e.verticalClass).length]);
-      $(e).parents('.tv-container-vertical:first').find('.' + e.verticalClass).show();
+      //console.log('keynav', 'verticalClass', $(e).parents('.tv-container-vertical:first').find('.' + e.verticalClass));
+      $(e).parent().find('.' + e.verticalClass).show();
     } else {
-      console.log(['keynav', 'no verticalClass', $('.' + e.verticalClass + ':not(.' + e.verticalClass + '-selected)').length]);
+      //console.log('keynav', 'no verticalClass', $('.' + e.verticalClass + ':not(.' + e.verticalClass + '-selected)'));
       $('.' + e.verticalClass + ':not(.' + e.verticalClass + '-selected)').hide();
     }
 
 	  kn.currentEl = e;
+    //console.warn(['keynav', 'focused', kn.currentEl.className]);
   }
   $.keynav.getCurrent = function () {
-    //console.warn(['keynav', 'getCurrent', $.keynav.currentEl]);
 	  var kn = $.keynav;
 	  if(kn.currentEl) {
 		  var cur = kn.currentEl;
@@ -87,6 +87,7 @@
 	  else {
 		  var cur = kn.el[0];
 	  }
+    //console.warn(['keynav', 'lastFocused', cur.className]);
 	  return cur;
   }
   $.keynav.quad = function(cur,fQuad) {    
@@ -100,7 +101,7 @@
 	  }
 	  return quad;
   }
-  $.keynav.activateClosest = function(cur,quad) {
+  $.keynav.activateClosest = function(cur,quad,direction) {
 	  var closest;
 	  var od = 1000000;
 	  var nd = 0;
@@ -108,28 +109,66 @@
 	  for(i=0;i<quad.length;i++) {
 		var e = quad[i];
 		nd = Math.sqrt(Math.pow(cur.pos.cx-e.pos.cx,2)+Math.pow(cur.pos.cy-e.pos.cy,2));
-		if(nd < od) {
+		
+		  /*if ($(found).hasClass('.nav') || $(found).hasClass('.subnav')) {
+  	   console.log('keynav', 'hack', found);
+  	   return $.keynav.setActive($('.logo.tv-component').get(0), true);
+  	  }*/
+
+    //si up on ne peut pas attraper les menus
+		if(nd < od && ($(cur).parents('.slider').length == 0 ||
+		               $(cur).parents('.slider').length != $(e).parents('.nav, .subnav').length)) {
+		  console.log('keynav', 'found', e, direction, $(cur).parents('.slider').length + '!=' + $(e).parents('.nav, .subnav').length);
 			closest = e;
 			od = nd;
 			found = true;
 		}
 	  }
-	  if(found)
-		$.keynav.setActive(closest, true);
+	  if(found) {
+		  $.keynav.setActive(closest, true);
+	  } else if (direction == 'goUp') {
+	   $.keynav.setActive($('.back:visible').get(0), true);
+	  }
     //console.warn('keynav', 'closest', closest);
   }
   $.keynav.goLeft = function () {
 	  var cur = $.keynav.getCurrent();
 	  
     if ($(cur).hasClass(cur.verticalClass) == false) {
-  	  var prev = $(cur).prev('.' + cur.offClass);
+  	  var prev = $(cur).prevAll('.' + cur.offClass + ':first');
   	  //console.log('keynav', 'goLeft', $(cur), prev);
   	  if (prev.length > 0) {
   	   $.keynav.setActive(prev.get(0), true);
   	   return;
   	  }
+  	  //vertical
+  	  var container = $(cur).prevAll('.tv-container-vertical:first');
+  	  var prev = container.find('.' + cur.verticalClass + '-selected:first');
+  	  //console.log('keynav', 'goLeft', 'vertical', $(cur), prev);
+  	  if (prev.length > 0) {
+        $.keynav.setActive(prev.get(0), true);
+  	    return;
+  	  }
+    } else {
+      //autre menu ?
+      var parent = $(cur).parents('.tv-container-vertical:first');
+      var container = parent.prevAll('.tv-container-vertical:first');
+  	  var prev = container.find('.' + cur.verticalClass + '-selected:first');
+  	  if (prev.length > 0) {
+        $.keynav.setActive(prev.get(0), true);
+  	    return;
+
+      //exit menu
+  	  } else {
+        var parent = $(cur).parents('.tv-container-vertical:first');
+  	    var prev = parent.prevAll('.' + cur.offClass + ':first');
+    	  if (prev.length > 0) {
+    	   $.keynav.setActive(prev.get(0), true);
+    	   return;
+    	  }
+  	  }
     }
-	  
+
 	  var quad = $.keynav.quad(cur,function (dx,dy) { 
 										if((dy >= 0) && (Math.abs(dx) - dy) <= 0)
 											return true;	
@@ -142,14 +181,32 @@
 	  var cur = $.keynav.getCurrent();
 	  
     if ($(cur).hasClass(cur.verticalClass) == false) {
-  	  var next = $(cur).next('.' + cur.offClass);
-  	  //console.log('keynav', 'goRight', $(cur), next);
+  	  var next = $(cur).nextAll('.' + cur.offClass + ':first');
+  	  //console.log('keynav', 'goRight', $(cur), next, '.' + cur.verticalClass + '-selected:first');
   	  if (next.length > 0) {
   	   $.keynav.setActive(next.get(0), true);
   	   return;
   	  }
+
+  	  //vertical
+  	  var container = $(cur).nextAll('.tv-container-vertical:first');
+  	  var next = container.find('.' + cur.verticalClass + '-selected:first');
+  	  //console.log('keynav', 'goLeft', 'vertical', $(cur), next);
+  	  if (next.length > 0) {
+        $.keynav.setActive(next.get(0), true);
+  	    return;
+  	  }
+    } else {
+      //autre menu ?
+      var parent = $(cur).parents('.tv-container-vertical:first');
+      var container = parent.nextAll('.tv-container-vertical:first');
+  	  var next = container.find('.' + cur.verticalClass + '-selected:first');
+  	  if (next.length > 0) {
+        $.keynav.setActive(next.get(0), true);
+  	    return;
+  	  }
     }
-	  
+
 	  var quad = $.keynav.quad(cur,function (dx,dy) { 
 										if((dy <= 0) && (Math.abs(dx) + dy) <= 0)
 											return true;	
@@ -163,13 +220,20 @@
 	  var cur = $.keynav.getCurrent();
 	  
     if ($(cur).hasClass(cur.verticalClass)) {
-	    //console.log('keynav', 'goUp', 'vertical', $(cur).prev('.' + cur.offClass));
-  	  var prev = $(cur).prev('.' + cur.offClass);
+	    //console.log('keynav', 'goUp', 'vertical', $(cur).prevAll('.' + cur.verticalClass + ':first'));
+  	  var prev = $(cur).prevAll('.' + cur.verticalClass + ':first');
   	  if (prev.length > 0) {
   	   $.keynav.setActive(prev.get(0), true);
   	   return;
   	  }
-    }
+    } /*else {
+	    var prev = $(cur).parents('.tv-container:first').prevAll('.tv-container:first').find('.' + cur.offClass)
+	    console.log('keynav', 'goUp', 'parents', $(cur).parents('.tv-container:first'));
+  	  if (prev.length > 0) {
+  	   $.keynav.setActive(prev.get(0), true);
+  	   return;
+  	  }
+	  }*/
 
 	  var quad = $.keynav.quad(cur,function (dx,dy) { 
 										if((dx >= 0) && (Math.abs(dy) - dx) <= 0)
@@ -177,15 +241,15 @@
 										else
 											return false;
 								   });
-	  $.keynav.activateClosest(cur,quad);
+	  $.keynav.activateClosest(cur,quad,'goUp');
   }
 
   $.keynav.goDown = function () {
 	  var cur = $.keynav.getCurrent();
 
     if ($(cur).hasClass(cur.verticalClass)) {
-	    //console.log('keynav', 'goDown', 'vertical', $(cur).next('.' + cur.offClass));
-  	  var next = $(cur).next('.' + cur.offClass);
+	    //console.log('keynav', 'goDown', 'vertical', $(cur).nextAll('.' + cur.verticalClass +':first'), '.' + cur.verticalClass +':first');
+  	  var next = $(cur).nextAll('.' + cur.verticalClass +':first');
   	  if (next.length > 0) {
   	   $.keynav.setActive(next.get(0), true);
   	   return;
@@ -198,13 +262,13 @@
 										else
 											return false;
 								   });
-	  $.keynav.activateClosest(cur,quad);
+	  $.keynav.activateClosest(cur,quad,'goDown');
   }
 
   $.keynav.activate = function () {
 	  var kn = $.keynav;
 	  //$(kn.currentEl).trigger('click');
-	  //console.warn(['keynav', 'activate', kn.currentEl]);
+	  console.log('keynav', 'activate', kn.currentEl);
 	  //$(kn.currentEl).click();
   }
 

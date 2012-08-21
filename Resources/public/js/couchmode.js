@@ -63,6 +63,7 @@ Couchmode = {
     this.loadMenu(datas.menu, args);
     this.loadSliders(datas.sliders, function(){
       console.log('Couchmode.init', 'callback', $('.slider', self.sliders));
+      $('.tv-component:visible, #topbar .tv-component').keynav('tv-component-focused', 'tv-component-unfocused', 'tv-component-vertical');
       if (self.active_slider == null) {
         self.active_slider = $('.slider:first', self.sliders);
         self.active_slider.addClass('current');

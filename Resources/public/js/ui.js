@@ -6,6 +6,7 @@ UI = {
   currentRoute: 'splash',
   currentView: 'splash',
   historyRoutes: [],
+  historyViews: [],
   badge_notification: '<span class="badge badge-important">%count%</span>',
   loader: '<div class="progress progress-striped active"><div class="bar" style="width:0%"></div></div>',
   init: function() {
@@ -30,19 +31,40 @@ UI = {
   loadView: function(route, view, args){
     var self = this;
     this.historyRoutes.push(this.currentRoute);
+    this.historyViews.push(this.currentView);
     this.currentRoute = route;
     this.currentView = view;
-    console.warn(['UI.loadView', 'callback', route, view, args]);
+    console.log(['UI.loadView', 'callback', route, view, args]);
+ 
     switch (view) {
       case 'splash':
         $('#sliders, #couchmode').hide();
         $('#splash').fadeIn('slow');
-        self.focus($('#splash .icon:first'));
+        
+        switch (this.historyRoutes.pop()) {
+          case 'v3-vod':
+            self.focus($('#splash .icon-vod'));
+          break;
+          case 'v3-cine':
+            self.focus($('#splash .icon-cine'));
+          break;
+          case 'playlist':
+            self.focus($('#splash .icon-playlist'));
+          break;
+          case 'tv-replay':
+          default:
+            self.focus($('#splash .icon:first'));
+          break;
+        }
         self.topbar.hide();
+        
+        $('#splash .tv-component:visible').keynav('tv-component-focused', 'tv-component-unfocused', 'tv-component-vertical');
         console.log('UI.load', 'splash', this.topbar);
       break;
       case 'popin':
-        Webview.postMessage(['player', 'pause']);
+        if (typeof Webview != 'undefined') {
+          Webview.postMessage(['player', 'pause']);
+        }
         url = API.config.popin + route + '?';
         for (var key in args) {
           url += key + '=' + args[key] + '&';
@@ -51,11 +73,12 @@ UI = {
         API.launchModal(url, function() {}, function() {
           console.warn('callbackOnLoad', $('.tv-component-focused'), $('.tv-component-last-focused'));
           
-          //$('.tv-component-focused').addClass('tv-component-last-focused');
-          $('.modal input').addClass('tv-component tv-input');
+
+          $('.modal input').addClass('tv-component tv-component-input');
           $('.modal input[type="text"], .modal input.text').attr('autocomplete', 'off');
           setTimeout(function(){
-            self.focus($('.modal .tv-component:first'), '.modal');
+            $('.modal .tv-component:visible').keynav('tv-component-focused', 'tv-component-unfocused', 'tv-component-vertical');
+            self.focus($('.modal .tv-component:first'));
           }, 2000);
         })
       break;
@@ -82,11 +105,17 @@ UI = {
     }
   },
   unloadView: function(route, view, args, callback) {
-    console.warn(['UI.unloadView', route, view, 'keep_nav :' + args.keep_nav, 'modal hidden :' + $('.modal').hasClass('hide')]);
+    console.log(['UI.unloadView', route, view, 'keep_nav :' + args.keep_nav, 'modal hidden :' + $('.modal').hasClass('hide')]);
 
     //keynav
+    if (view == 'popin') {
+      $('.tv-component-focused').addClass('tv-component-last-focused');
+      console.log('.tv-component-last-focused', $('.tv-component-last-focused'));
+    }
     this.getFocusedElmt().removeClass('tv-component-focused').addClass('tv-component-unfocused');
     $.keynav.reset();
+    
+          $('.tv-component-focused').addClass('tv-component-last-focused');
 
     //modal
     if ($('.modal').hasClass('in') == true) {
@@ -101,12 +130,15 @@ UI = {
     Player.stop();
 
     //android
-    Webview.postMessage(['fullscreen']);
+    if (typeof Webview != 'undefined') {
+      Webview.postMessage(['fullscreen']);
+    }
 
     //topbar
     if (typeof args.keep_nav == 'undefined' && view != 'popin') {
-      $('.nav, .subnav', this.topbar).hide().find('ul').empty();
+      $('.nav ul, .subnav ul', this.topbar).empty();
     }
+    $('.nav, .subnav', this.topbar).hide();
 
     //callback
     if (typeof callback != 'undefined') {
@@ -162,24 +194,41 @@ UI = {
   historyBack: function() {
     this.load(this.historyRoutes.slice(0,1));
   },
-  focus: function(elmt, frame) {
+  focus: function(elmt, fromKeynav) {
     if (typeof elmt == 'undefined' || elmt.length == 0) {
-      console.error('UI.focus', 'undefined');
-      return false;
+      console.error('UI.focus', 'undefined', elmt);
+      var elmt = $('.tv-component:first');
     }
+
+    if (typeof fromKeynav == 'undefined') {
+      return $.keynav.setActive(elmt.get(0));
+    }
+    
+    //console.log(['UI.focus', elmt]);
+
     if (elmt.hasClass('tv-component-last-focused')) {
       elmt.removeClass('tv-component-last-focused');
     }
-    console.log('UI.focus', elmt, frame + ' .tv-component:visible');
-    frame = typeof frame != 'undefined' ? frame : 'body';
-    $('.nav, .subnav').show();
-    $(frame + ' .tv-component:visible').keynav('tv-component-focused', 'tv-component-unfocused', 'tv-component-vertical');
-    $.keynav.setActive(elmt.get(0));
-    //elmt.removeClass('tv-component-unfocused').addClass('tv-component-focused');
+    //menu
+    if ($('.nav ul li').length > 0) {
+      $('.nav').show();
+    }
+    if ($('.subnav ul li').length > 0) {
+      $('.subnav').show();
+    }
+    if (elmt.parents('.nav, .subnav').length > 0) {
+      elmt.parents('.nav, .subnav').find('li:not(.tv-component-vertical-selected)').hide();
+    }
+
+    //console.warn(['UI.focus', 'tv-component-input', elmt.hasClass('tv-component-input')]);
+    if (elmt.hasClass('tv-component-input')) {
+      elmt.focus();
+    }
   },
   getFocusedElmt: function() {
-    //return $($.keynav.getCurrent());
-    return $('.tv-component-focused:first');
+    //console.warn(['UI.getFocusedElmt', $($.keynav.getCurrent()).className]);
+    return $($.keynav.getCurrent());
+    //return $('.tv-component-focused:last');
   },
   slideV: function(slider, direction) {
     console.log('UI.slideV', direction, slider.next('.slider.slide-v'), slider.prev('.slider.slide-v'));
@@ -259,6 +308,7 @@ UI = {
 	  $.keynav.goDown();
   },
   goEnter: function(){
+
     var elmt = this.getFocusedElmt();
     elmt.addClass('tv-component-last-focused');
 

@@ -15,8 +15,9 @@ $(document).ready(function(){
 
   //keynav
   $(document).keydown(function(e) {
+
     var key = e.keyCode;
-    console.warn(['script.keydown', 'key', key]);
+    //console.warn(['script.keydown', 'key', key]);
 		switch(key) {
 			//case 68:
 			case 37:
@@ -40,30 +41,34 @@ $(document).ready(function(){
 			  break;
 			case 13:
 			  //e.preventDefault();
-			  UI.goEnter()
+			  if (typeof Webview == 'undefined') {
+			   UI.goEnter()
+			  } else {
+          console.warn(['keydown', 'enter 13', 'skipped']);
+			  }
 			  break;
 			case 27:
 			  //e.preventDefault();
 			  UI.goReturn()
 			  break;
-			//default:
-      //  console.warn(['keydown', 'key', key]);
-			//  break;
+			default:
+        console.warn(['keydown', 'key', key]);
+			  break;
 		}
+
+    if (UI.currentView == 'couchmode') {
+      //Couchmode.idle();
+    }
   });
 
-  // give first div focus (optional)
-  UI.focus($('.tv-component:visible:first'));
+  // keynav + give first div focus (optional)
+  $('#splash .tv-component:visible').keynav('tv-component-focused', 'tv-component-unfocused', 'tv-component-vertical');
+  UI.focus($('#icons .tv-component:visible:first'));
 
   // Couchmode
   $(window).mousemove(function(e) {
+    e.preventDefault();
     //console.log('script', 'mousemove', 'Couchmode.idle', UI.currentView);
-    if (UI.currentView == 'couchmode') {
-      Couchmode.idle();
-    }
-  });
-  $(window).keyup(function(e) {
-    //console.log('script', 'keyup', 'Couchmode.idle', UI.currentView);
     if (UI.currentView == 'couchmode') {
       Couchmode.idle();
     }
@@ -115,6 +120,7 @@ $(document).ready(function(){
   // -- modal
   $('.modal').on('hide', function(e){
     console.log('script', 'modal', "on('hide')", $('.tv-component-last-focused'));
+    $('.tv-component:visible, #topbar .tv-component').keynav('tv-component-focused', 'tv-component-unfocused', 'tv-component-vertical');
     UI.focus($('.tv-component-last-focused')); //$('div:not(#toppbar, .modal) .tv-component:first'));
     Player.resume(Couchmode.player);
   });
@@ -123,12 +129,12 @@ $(document).ready(function(){
   });
 
   // -- routes
-  $('[data-load-route]').live('click', function(e) {
+  $('.tv-component-focused[data-load-route]').live('click', function(e) {
     e.preventDefault();
-    console.warn('[data-load-route]', $(this).data('load-route'));
+    console.warn(['[data-load-route]', $(this).data('load-route'), this.className]);
 
-    if ($(this).hasClass('tv-input') && !$(this).val()) {
-      console.warn(['script', 'tv-input', 'empty']);
+    if ($(this).hasClass('tv-component-input') && !$(this).val()) {
+      console.warn(['script', 'tv-component-input', 'empty']);
       return false;
     }
 
@@ -153,7 +159,7 @@ $(document).ready(function(){
     UI.load($(this).data('load-route'), $(this).data('load-view'), args);
     return false;
   });
-  $('[data-open-browser]').live('click', function(e) {
+  $('.tv-component-focused[data-open-browser]').live('click', function(e) {
     console.warn('script', '[data-open-browser]', $(this).data('open-browser'));
     Webview.postMessage(['browser', $(this).data('open-browser')]);
   });

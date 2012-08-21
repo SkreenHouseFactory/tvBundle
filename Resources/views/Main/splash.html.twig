@@ -3,19 +3,19 @@
 {% block title %}{{ 'page.title.home'|trans }}{% endblock %}
 
 {% block content %}
-<div id="splash" class="tv-container-vertical">
+<div id="splash" class="tv-container">
   <div id="user" class="hide"><span class="user"></span> | <a class="tv-component signout" href="#">Déconnexion</a></div>
   <img id="logo" src="{{ asset('bundles/skreenhousefactorytv/images/liang/icon_logo_1280.png') }}" alt="{{ 'service.name'|trans }}" />
   <br/>
   <img id="divider" src="{{ asset('bundles/skreenhousefactorytv/images/liang/trait_separation_1280.png') }}" />
-  <div id="icons" class="tv-container-horizontal">
+  <div id="icons" class="tv-container">
     <div class="icon icon-tvreplay tv-component first-focus" data-load-route="tv-replay" data-load-view="sliders" data-slider-scroll="yes"></div>
     <div class="icon icon-vod tv-component" data-load-route="v3-vod"></div>
     <div class="icon icon-cine tv-component" data-load-route="v3-cine"></div>
     {#<div class="icon icon-playlist tv-component" data-load-route="playlist"></div>#}
   </div>
-  <div id="search">
-    <input type="text" class="tv-component tv-input" data-load-view="sliders" data-load-route="search" />
+  <div id="search" class="tv-container">
+    <input type="text" class="tv-component tv-component-input" data-load-view="sliders" data-load-route="search" />
   </div>
 </div>
 {% endblock %}

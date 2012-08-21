@@ -34,6 +34,7 @@ Sliders = {
     this.elmt.fadeIn();
 
     this.ui(action, args, function(){
+      $('.tv-component:visible, #topbar .tv-component').keynav('tv-component-focused', 'tv-component-unfocused', 'tv-component-vertical');
       UI.focus($('li:first', self.sliders)); //.addClass('tv-component-focused');
     });
   },
