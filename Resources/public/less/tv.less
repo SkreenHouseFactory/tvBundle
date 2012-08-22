@@ -2,7 +2,7 @@
    Author: Benoît Bergstörm
    ========================================================================== */
 
-@bgBody: url("/bundles/skreenhousefactorytv/images/liang/bg_home_1280.png") repeat-y;
+@bgBody: url("/bundles/skreenhousefactorytv/images/liang/bg-repeat.png");
 @focusBorder: #6391DE solid 4px !important;
 @focusShadow: 0px 0px 10px yellow;
 @focusShadowInset: inset 0px 0px 10px #6391DE;
@@ -12,7 +12,7 @@ html {
   padding: 0;
   height: 100%;
   width: 100%;
-  zoom: 0.9;
+  zoom: 0.7;
 
   body {
     font-family: Belleza, Helvetica;
@@ -23,6 +23,7 @@ html {
     /*background: @bgBody;
     box-shadow: inset 0 1px 200px #444;*/
     overflow: hidden;
+    -webkit-box-shadow: inset 0 0 20px black;
     
     #splash, #sliders {
       background: @bgBody;
@@ -46,7 +47,7 @@ html {
 
 .progress {
   height: 15px;
-  margin: 20% 35%;
+  margin: 25% 35%;
 }
 
 .modal {
@@ -63,7 +64,7 @@ html {
     }
   }
   .modal-body {
-    height: 350px;
+    height: 400px;
     overflow: hidden;
     position: relative;
 
@@ -161,7 +162,7 @@ html {
   }
 
   #logo {
-    margin: 11% 0 2%;
+    margin: 10% 0 5%;
   }
 
   #icons {
@@ -212,15 +213,16 @@ html {
     margin-top: 8%;
   
     input {
-      width: 40%;
-      border-radius: 20px;
+      width: 35%;
+      border-radius: 15px;
       border:0;
-      padding: 10px;
+      padding: 15px 20px;
       background: #666;
       box-shadow: inset 1px -1px 3px #333;
       text-align: center;
       font-size: 1.3em;
       color: #333;
+      border: 4px solid #999;
     }
     input:focus {
       box-shadow: @focusShadowInset;
@@ -272,11 +274,12 @@ html {
     > i {
       position: absolute;
       right: 12px;
-      margin-top: 12px;
+      margin-top: 22px;
     }
     ul {
       background: black;
       box-shadow: 1px 1px 5px black;
+      margin-top: 10px;
 
       li {
         list-style: none;
@@ -345,13 +348,9 @@ html {
       
       .slider.down, .slider.up {
         
-        h2 {
-          display: none;
-        }
-        
         ul {
           margin-top: 10px;
-          opacity: 0.3;
+          opacity: 0.4;
         }
       }
     }
@@ -373,7 +372,7 @@ html {
 
   .container {
     width: 100%;
-    padding-top: 50px;
+    padding-top: 80px;
     position: absolute;
     
     .slider {
@@ -405,6 +404,11 @@ html {
 
     li {
       border: 1px solid #555;
+
+      .title {
+        font-size: 1.2em;
+        height: auto;
+      }
     }
 
     li.tv-component-focused, ul.items li:hover {

@@ -67,6 +67,7 @@ Couchmode = {
       if (self.active_slider == null) {
         self.active_slider = $('.slider:first', self.sliders);
         self.active_slider.addClass('current');
+        $('.slider:not(.current)', self.sliders).addClass('down');
         self.play();
       } else {
         //slider.addClass('down');
