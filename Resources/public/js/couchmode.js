@@ -118,6 +118,7 @@ Couchmode = {
     console.log('Couchmode.loadMenu', menu, this.topbar);
     $('.onglet span', this.topbar).html(menu.onglet.replace('v3-vod', 'Vidéo à la demande')
                                                    .replace('v3-cine', 'Au cinéma')
+                                                   .replace('v3-jeunesse', 'Contenus jeunesse')
                                                    .replace('films', 'Films en VOD')
                                                    .replace('documentaires', 'Documentaires en VOD')
                                                    .replace('series', 'Séries en VOD')
@@ -127,7 +128,7 @@ Couchmode = {
     if (menu.nav != null && menu.nav.length > 0) {
       for (key in menu.nav) {
         if (args.onglet == 'playlist') {
-          nav.append('<li data-load-route="playlist" data-keep-nav="1" data-nav="' + menu.nav[key]  + '" class="tv-component tv-component-vertical' + (key == 0 ? ' tv-component-vertical-selected' : '') + '"><a href="#">' + menu.nav[key]  + '</a></li>');
+          nav.append('<li data-load-route="playlist" data-keep-nav="1" data-nav="' + menu.nav[key]  + '" class="tv-component tv-component-vertical' + (key == 0 ? ' tv-component-vertical-selected' : '') + '"><a href="#">' + menu.nav[key].replace('v3-','')  + '</a></li>');
         } else {
           nav.append('<li data-keep-nav="1" data-load-route="' + menu.nav[key]  + '" class="tv-component tv-component-vertical' + (key == 0 ? ' tv-component-vertical-selected' : '') + '"><a href="#">' + menu.nav[key]  + '</a></li>');
         }
