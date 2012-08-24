@@ -216,9 +216,9 @@ UI = {
     if ($('.subnav ul li').length > 0) {
       $('.subnav').show();
     }
-    if (elmt.parents('.nav, .subnav').length > 0) {
-      elmt.parents('.nav, .subnav').find('li:not(.tv-component-vertical-selected)').hide();
-    }
+    //if (elmt.parents('.nav, .subnav').length > 0) {
+    //  elmt.parents('.nav, .subnav').find('li:not(.tv-component-vertical-selected)').hide();
+    //}
 
     //console.warn(['UI.focus', 'tv-component-input', elmt.hasClass('tv-component-input')]);
     if (elmt.hasClass('tv-component-input')) {

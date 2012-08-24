@@ -128,9 +128,9 @@ Couchmode = {
     if (menu.nav != null && menu.nav.length > 0) {
       for (key in menu.nav) {
         if (args.onglet == 'playlist') {
-          nav.append('<li data-load-route="playlist" data-keep-nav="1" data-nav="' + menu.nav[key]  + '" class="tv-component tv-component-vertical' + (key == 0 ? ' tv-component-vertical-selected' : '') + '"><a href="#">' + menu.nav[key].replace('v3-','')  + '</a></li>');
+          nav.append('<li data-load-route="playlist" data-keep-nav="1" data-nav="' + menu.nav[key]  + '" class="tv-component tv-component-vertical' + (key == 0 ? ' tv-component-vertical-selected' : '') + '"><a href="#">' + menu.nav[key]  + '</a></li>');
         } else {
-          nav.append('<li data-keep-nav="1" data-load-route="' + menu.nav[key]  + '" class="tv-component tv-component-vertical' + (key == 0 ? ' tv-component-vertical-selected' : '') + '"><a href="#">' + menu.nav[key]  + '</a></li>');
+          nav.append('<li data-keep-nav="1" data-load-route="' + menu.nav[key]  + '" class="tv-component tv-component-vertical' + (key == 0 ? ' tv-component-vertical-selected' : '') + '"><a href="#">' + menu.nav[key].replace('v3-','')  + '</a></li>');
         }
       }
       $('.nav').addClass('tv-container-vertical');
@@ -145,11 +145,18 @@ Couchmode = {
       $('.subnav').show();
     }*/
   },
-  next: function(li) {
+  next: function() {
     var next = $('.tv-component-focused', this.active_slider).next();
     if (next.length > 0) {
       UI.focus(next);
       this.play(next);
+    }
+  },
+  prev: function() {
+    var prev = $('.tv-component-focused', this.active_slider).prev();
+    if (prev.length > 0) {
+      UI.focus(prev);
+      this.play(prev);
     }
   },
   play: function(li) {

@@ -70,10 +70,11 @@
     //vertical
     if ($(e).hasClass(cur.verticalClass)) {
       //console.log('keynav', 'verticalClass', $(e).parents('.tv-container-vertical:first').find('.' + e.verticalClass));
-      $(e).parent().find('.' + e.verticalClass).show();
+      $(e).parent().addClass('keynav-container-vertical-selected');//.find('.' + e.verticalClass).show();
     } else {
       //console.log('keynav', 'no verticalClass', $('.' + e.verticalClass + ':not(.' + e.verticalClass + '-selected)'));
-      $('.' + e.verticalClass + ':not(.' + e.verticalClass + '-selected)').hide();
+      $('.keynav-container-vertical-selected').removeClass('keynav-container-vertical-selected');//.find('.' + e.verticalClass).show();
+      //$('.' + e.verticalClass + ':not(.' + e.verticalClass + '-selected)').hide();
     }
 
 	  kn.currentEl = e;

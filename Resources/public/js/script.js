@@ -57,7 +57,7 @@ $(document).ready(function(){
 		}
 
     if (UI.currentView == 'couchmode') {
-      //Couchmode.idle();
+      Couchmode.idle();
     }
   });
 
