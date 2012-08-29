@@ -103,21 +103,18 @@ $(document).ready(function(){
   // -- sliders
   $('.slider:not(.couchmode) li').live('click', function(e) {
     e.preventDefault();
-    e.stopPropagation();
     console.log('script', 'slider', 'li click', $(this));
     UI.load('fiche', 'popin', {id: $(this).data('id')});
     return false;
   });
   $('.slider.couchmode li').live('click', function(e) {
     e.preventDefault();
-    e.stopPropagation();
-    console.log('script', 'couchmode', 'li click', $(this));
-    if (Couchmode.player.data('playing-id') == $(this).data('id')) {
+    console.warn(['script', 'couchmode', 'li click', $(this)]);
+    if (Player.elmt.data('playing-id') == $(this).data('id')) {
       Player.pause($('#couchmode-player'));
-      $(this).addClass('tv-component-last-focused');
       UI.load('fiche', 'popin', {id: $(this).data('id')});
     } else {
-      Couchmode.play($(this), $('#couchmode-player'));
+      Couchmode.play($(this));
       //UI.load('show');
     }
     return false;
