@@ -34,13 +34,15 @@ UI = {
     this.historyViews.push(this.currentView);
     this.currentRoute = route;
     this.currentView = view;
-    console.log(['UI.loadView', 'callback', route, view, args]);
+    //console.log(['UI.loadView', 'callback', route, view, args]);
  
     switch (view) {
       case 'splash':
-        $('#sliders, #couchmode').hide();
+        $('#sliders, #couchmode, #topbar').hide();
         $('#splash').fadeIn('slow');
-        
+
+        self.keynav();
+
         switch (this.historyRoutes.pop()) {
           case 'v3-vod':
             self.focus($('#splash .icon-vod'));
@@ -56,10 +58,8 @@ UI = {
             self.focus($('#splash .icon:first'));
           break;
         }
-        self.topbar.hide();
-        
-        $('#splash .tv-component:visible').keynav('tv-component-focused', 'tv-component-unfocused', 'tv-component-vertical');
-        console.log('UI.load', 'splash', this.topbar);
+
+        //console.log('UI.load', 'splash', this.topbar);
       break;
       case 'popin':
         if (typeof Webview != 'undefined') {
@@ -71,15 +71,16 @@ UI = {
         }
         //UI.appendLoader($('.modal .modal-body'));
         API.launchModal(url, function() {}, function() {
-          console.warn('callbackOnLoad', $('.tv-component-focused'), $('.tv-component-last-focused'));
+          //console.warn('callbackOnLoad', $('.tv-component-focused'), $('.tv-component-last-focused'));
           
 
           $('.modal input').addClass('tv-component tv-component-input');
           $('.modal input[type="text"], .modal input.text').attr('autocomplete', 'off');
           setTimeout(function(){
-            $('.modal .tv-component:visible').keynav('tv-component-focused', 'tv-component-unfocused', 'tv-component-vertical');
+            
+            self.keynav($('.modal'));
             self.focus($('.modal .tv-component:first'));
-          }, 2000);
+          }, 1000);
         })
       break;
       case 'sliders':
@@ -100,22 +101,15 @@ UI = {
           });
           return false;
         }
-        Couchmode.init({onglet: route, session_uid: Skhf.session.uid, program_id: args.program_id, nav: args.nav});
+        Couchmode.init({onglet: route, 
+                        session_uid: Skhf.session.uid, 
+                        program_id: args.program_id, 
+                        nav: args.nav});
       break;
     }
   },
   unloadView: function(route, view, args, callback) {
-    console.log(['UI.unloadView', route, view, 'keep_nav :' + args.keep_nav, 'modal hidden :' + $('.modal').hasClass('hide')]);
-
-    //keynav
-    if (view == 'popin') {
-      $('.tv-component-focused').addClass('tv-component-last-focused');
-      console.log('.tv-component-last-focused', $('.tv-component-last-focused'));
-    }
-    this.getFocusedElmt().removeClass('tv-component-focused').addClass('tv-component-unfocused');
-    $.keynav.reset();
-    
-          $('.tv-component-focused').addClass('tv-component-last-focused');
+    //console.log(['UI.unloadView', route, view, 'keep_nav :' + args.keep_nav, 'modal hidden :' + $('.modal').hasClass('hide')]);
 
     //modal
     if ($('.modal').hasClass('in') == true) {
@@ -124,10 +118,15 @@ UI = {
 
     //couchmode
     if (this.currentView == 'couchmode') {
+      console.warn(['UI.unloadView', 'Couchmode.unload()']);
       Couchmode.unload();
     }
-    Player.pause();
-    Player.stop();
+
+    //player
+    if (Player.is_playing == true) {
+      console.warn(['UI.unloadView', 'Player.stop()']);
+      Player.stop();
+    }
 
     //android
     if (typeof Webview != 'undefined') {
@@ -135,10 +134,12 @@ UI = {
     }
 
     //topbar
-    if (typeof args.keep_nav == 'undefined' && view != 'popin') {
-      $('.nav ul, .subnav ul', this.topbar).empty();
+    if (typeof args.keep_nav == 'undefined') {
+      if (view != 'popin') {
+        $('.nav ul, .subnav ul', this.topbar).empty();
+        $('.nav, .subnav', this.topbar).hide();
+      }
     }
-    $('.nav, .subnav', this.topbar).hide();
 
     //callback
     if (typeof callback != 'undefined') {
@@ -157,18 +158,18 @@ UI = {
   loadUserPrograms: function(ids, elmt) {
     var ids  = typeof ids  != 'undefined' ? ids  : Skhf.session.datas.queue;
     var elmt = typeof elmt != 'undefined' ? elmt : $('body');
-    console.log('UI.loadUserPrograms', ids, elmt);
+    //console.log('UI.loadUserPrograms', ids, elmt);
     for (key in ids) {
-      console.log('UI.loadUserPrograms', ids[key], '.actions[data-id="' + ids[key] + '"] a.fav:not(.btn-primary)');
+      //console.log('UI.loadUserPrograms', ids[key], '.actions[data-id="' + ids[key] + '"] a.fav:not(.btn-primary)');
       $('.actions[data-id="' + ids[key] + '"] a.fav:not(.btn-primary)', elmt).html('<i class="icon-ok-sign icon-white"></i> Dans vos favoris')
-                                                                            .addClass('btn-primary');
+                                                                             .addClass('btn-primary');
     }
   },
   unloadUserPrograms: function(ids, elmt) {
     var elmt = typeof elmt != 'undefined' ? elmt : $('body');
-    console.log('UI.unloadUserPrograms', ids, elmt);
+    //console.log('UI.unloadUserPrograms', ids, elmt);
     for (key in ids) {
-      console.log('UI.loadUserPrograms', ids[key], '.actions[data-id="' + ids[key] + '"] a.fav:not(.btn-primary)');
+      //console.log('UI.loadUserPrograms', ids[key], '.actions[data-id="' + ids[key] + '"] a.fav:not(.btn-primary)');
       $('.actions[data-id="' + ids[key] + '"] a.fav.btn-primary, .actions[data-id="' + ids[key] + '"] a.fav.btn-danger', elmt).html('<i class="icon-plus-sign"></i> Suivre / voir + tard')
                                                                       .removeClass('btn-primary');
     }
@@ -178,7 +179,7 @@ UI = {
     var remove = trigger.hasClass('btn-primary') || trigger.hasClass('btn-danger') ? true : false;
     if (Skhf.session.datas.email) {
       API.togglePreference('like', value, trigger, function(value){
-        console.log('UI.togglePlaylistProgram', 'callback', value, trigger, 'remove:'+remove);
+        //console.log('UI.togglePlaylistProgram', 'callback', value, trigger, 'remove:'+remove);
         if (remove) { //pas pour le slider social
           trigger.removeClass('btn-primary').html('<i class="icon-add-sign"></i> Suivre / voir plus tard');
         } else {
@@ -194,44 +195,27 @@ UI = {
   historyBack: function() {
     this.load(this.historyRoutes.slice(0,1));
   },
-  focus: function(elmt, fromKeynav) {
+  keynav: function(elmt) {
+    //console.warn(['UI.keynav']);
+    $.keynav.reset();
+    var components = typeof elmt == 'undefined' ? $('.tv-component:visible, #topbar .tv-component-vertical') : $('.tv-component:visible', elmt);
+    components.keynav('tv-component-focused', 'tv-component-unfocused', 'tv-component-vertical');
+  },
+  focus: function(elmt) {
+    //console.warn(['UI.focus', elmt.attr('class')]);
+
     if (typeof elmt == 'undefined' || elmt.length == 0) {
-      console.error('UI.focus', 'undefined', elmt);
       var elmt = $('.tv-component:first');
     }
 
-    if (typeof fromKeynav == 'undefined') {
-      return $.keynav.setActive(elmt.get(0));
-    }
-    
-    //console.log(['UI.focus', elmt]);
-
-    if (elmt.hasClass('tv-component-last-focused')) {
-      elmt.removeClass('tv-component-last-focused');
-    }
-    //menu
-    if ($('.nav ul li').length > 0) {
-      $('.nav').show();
-    }
-    if ($('.subnav ul li').length > 0) {
-      $('.subnav').show();
-    }
-    //if (elmt.parents('.nav, .subnav').length > 0) {
-    //  elmt.parents('.nav, .subnav').find('li:not(.tv-component-vertical-selected)').hide();
-    //}
-
-    //console.warn(['UI.focus', 'tv-component-input', elmt.hasClass('tv-component-input')]);
-    if (elmt.hasClass('tv-component-input')) {
-      elmt.focus();
-    }
+    $.keynav.setActive(elmt.get(0));
   },
   getFocusedElmt: function() {
     //console.warn(['UI.getFocusedElmt', $($.keynav.getCurrent()).className]);
     return $($.keynav.getCurrent());
-    //return $('.tv-component-focused:last');
   },
   slideV: function(slider, direction) {
-    console.log('UI.slideV', direction, slider.next('.slider.slide-v'), slider.prev('.slider.slide-v'));
+    //console.log('UI.slideV', direction, slider.next('.slider.slide-v'), slider.prev('.slider.slide-v'));
     $('.slider', slider.parent()).removeClass('down up current');
     if (direction == 'down' && slider.next('.slider.slide-v').length > 0) {
       //slider.parent().css({top: '-=240'});
@@ -261,26 +245,27 @@ UI = {
   },
   goLeft: function(){
     var elmt = UI.getFocusedElmt();
+	  $.keynav.goLeft();
     var slider = elmt.parents('.slide-h:first');
     if (slider && elmt.data('position') > 3 && parseInt(elmt.parent().data('current-position')) > 0) {
-      console.log('position', 'left', elmt.data('position'), parseInt(elmt.parent().data('current-position')));
+      //console.log('position', 'left', elmt.data('position'), parseInt(elmt.parent().data('current-position')));
       this.slideH(slider, 'left');
       elmt.parent().data('current-position', parseInt(elmt.parent().data('current-position'))-1);
     }
-	  $.keynav.goLeft();
   },
   goRight: function(){
     var elmt = UI.getFocusedElmt();
+	  $.keynav.goRight();
     var slider = elmt.parents('.slide-h:first');
     if (slider && elmt.data('position') >= 3) {
-      console.log('position', 'right', elmt.data('position'), parseInt(elmt.parent().data('current-position')));
+      //console.log('position', 'right', elmt.data('position'), parseInt(elmt.parent().data('current-position')));
       this.slideH(slider, 'right');
       elmt.parent().data('current-position', parseInt(elmt.parent().data('current-position'))+1);
     }
-	  $.keynav.goRight();
   },
   goUp: function(){
     var elmt = UI.getFocusedElmt();
+	  $.keynav.goUp();
     //slider
     var slider = elmt.parents('.slide-v:first');
     if (slider.length > 0) {
@@ -288,13 +273,14 @@ UI = {
     }
     //data-slide-v
     if (elmt.data('slide-v-step')) {
-      console.log('goUp', elmt, elmt.parents('.tv-container-vertical:first'));
+      //console.log('goUp', elmt, elmt.parents('.tv-container-vertical:first'));
       elmt.parents('.tv-container-vertical:first').animate({top: '+=' + elmt.data('slide-v-step')}, 200);
     }
-	  $.keynav.goUp();
   },
   goDown: function(){
+    //return this.goUp();
     var elmt = UI.getFocusedElmt();
+	  $.keynav.goDown();
     //slider
     var slider = elmt.parents('.slide-v:first');
     if (slider.length > 0) {
@@ -305,18 +291,17 @@ UI = {
       console.log('goDown', elmt, elmt.parents('.tv-container-vertical:first'));
       elmt.parents('.tv-container-vertical:first').animate({top: '-=' + elmt.data('slide-v-step')}, 200);
     }
-	  $.keynav.goDown();
   },
-  goEnter: function(){
+  goEnter: function(isEnter){
 
     var elmt = this.getFocusedElmt();
-    elmt.addClass('tv-component-last-focused');
 
-    console.log('UI.goEnter', $('.tv-component-focused'), $('.tv-component-last-focused'));
-	  //$.keynav.activate()
+    //input
+    if (elmt.hasClass('tv-component-input') && (!elmt.val() || typeof isEnter == 'undefined')) { //
+      console.warn(['UI.goEnter', 'tv-component-input', 'empty', isEnter, elmt.val()]);
+      return false;
+    }
 
-	  //vertical selected
-    //console.log('script', 'keynav', 'activate', elmt);
     //btn
     if (elmt.hasClass('btn')) {
       //console.log('keynav', 'btn', elmt.parent());
@@ -324,7 +309,47 @@ UI = {
       elmt.addClass('btn-primary');
     }
 
-    elmt.click();
+    //nav ?
+    if (elmt.hasClass('tv-component-vertical')) {
+      console.warn(['UI.goEnter', 'tv-component-vertical']);
+      $('li.tv-component-vertical-selected', elmt.parent()).removeClass('tv-component-vertical-selected');
+      elmt.addClass('tv-component-vertical-selected');
+      $('.keynav-container-vertical-selected').removeClass('keynav-container-vertical-selected');
+    }
+
+    //route ?
+    if (elmt.data('load-route')) {
+
+      var args = {};
+      if (elmt.data('slider-scroll')) {
+        args.scroll = elmt.data('slider-scroll');
+      }
+      if (elmt.data('keep-nav')) {
+        args.keep_nav = elmt.data('keep-nav');
+      }
+      if (elmt.data('program-id')) {
+        args.program_id = elmt.data('program-id');
+      }
+      if (elmt.data('nav')) {
+        args.nav = elmt.data('nav');
+        args.subnav = $('.nav .selected', UI.topbar).length > 0 ? $('.subnav .selected', UI.topbar).data('subnav') : '';
+      } else if (elmt.data('subnav')) {
+        args.subnav = elmt.data('subnav');
+        args.nav = $('.nav .selected', UI.topbar).length > 0 ? $('.nav .selected', UI.topbar).data('nav') : '';
+      }
+      console.warn(['UI.goEnter', 'load-route', args, elmt]);
+      UI.load(elmt.data('load-route'), elmt.data('load-view'), args);
+
+    // browser ?
+    } else if (elmt.data('open-browser')) {
+      console.warn(['UI.goEnter', 'open-browser', elmt.data('open-browser')]);
+      Webview.postMessage(['browser', elmt.data('open-browser')]);
+
+    // click
+    } else {
+      console.warn(['UI.goEnter', 'proxy', 'click']);
+      elmt.trigger('click');
+    }
   },
   goReturn: function(){
     //btn

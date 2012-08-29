@@ -26,10 +26,10 @@
 	  });
   }
   $.fn.keynav_sethover = function(onClass,offClass) {
-    //console.warn('keynav_sethover');
+    console.warn('keynav_sethover');
 	  return this.each(function() {
-		this.onClass = onClass;
-		this.offClass = offClass;
+  		this.onClass = onClass;
+  		this.offClass = offClass;
 	  });
   }
 
@@ -44,41 +44,62 @@
 	  e.onClass = onClass;
 	  e.offClass = offClass;
 	  e.verticalClass = verticalClass;
-	  e.onmouseover = function (e) {
-      if (typeof Webview == 'undefined') {
-       //console.warn(['keynav', 'onmouseover', e]);
+    if (typeof Webview == 'undefined' || document.location.href.match(/touch/gi)) {
+  	  e.onmouseover = function (event) {
+       console.warn(['keynav.reg', 'onmouseover', e.className]);
 	     $.keynav.setActive(this);
-      } else {
-       //console.warn(['keynav', 'onmouseover', e, 'skiped']);
-      }
-	  };
+  	  };
+    } else {
+      //console.warn(['keynav.reg', 'onmouseover', e.className, 'skiped']);
+    }
+
 	  kn.el.push(e);
   }
   $.keynav.setActive = function(e, fromKeyb) {
-    //console.warn(['keynav', 'setActive', e, fromKeyb]);
-    
+    if (typeof e == 'undefined') {
+      console.warn(['setActive undefined']);
+      return false;
+    }
 	  var kn = $.keynav;
 	  var cur = $.keynav.getCurrent();
-	  if ($(cur).hasClass(cur.offClass + '-input')) {
-	   $(cur).blur();
-	  }
 
-    $(cur).removeClass(e.onClass).addClass(e.offClass);
+    //console.warn(['keynav.setActive', $(e).html()]);
+
+    //new component
     $(e).removeClass(e.offClass).addClass(e.onClass);
-    UI.focus($(e), true);
+    if ($(e).hasClass('tv-component-input')) {
+      $(e).focus();
+    }
 
+    //last component
+    if (e != cur) {
+      //console.warn(['keynav.setActive1', e.onClass]);
+      $(cur).removeClass(e.onClass).addClass(e.offClass);
+
+      //last focused
+      $('.tv-component-last-focused').removeClass('tv-component-last-focused');
+      $(cur).addClass('tv-component-last-focused').focus();
+  
+      //input
+  	  if ($(cur).hasClass('tv-component-input')) {
+  	   $(cur).blur();
+	    }
+    }
+
+    //console.warn(['keynav.setActive2', cur.className, e.className]);
     //vertical
-    if ($(e).hasClass(cur.verticalClass)) {
-      //console.log('keynav', 'verticalClass', $(e).parents('.tv-container-vertical:first').find('.' + e.verticalClass));
-      $(e).parent().addClass('keynav-container-vertical-selected');//.find('.' + e.verticalClass).show();
-    } else {
+    if ($('.keynav-container-vertical-selected').length > 0) {
       //console.log('keynav', 'no verticalClass', $('.' + e.verticalClass + ':not(.' + e.verticalClass + '-selected)'));
-      $('.keynav-container-vertical-selected').removeClass('keynav-container-vertical-selected');//.find('.' + e.verticalClass).show();
-      //$('.' + e.verticalClass + ':not(.' + e.verticalClass + '-selected)').hide();
+      $('.keynav-container-vertical-selected').removeClass('keynav-container-vertical-selected');
+    }
+    if ($(e).hasClass(e.verticalClass)) {
+      //console.log('keynav', 'verticalClass', $(e).parents('.tv-container-vertical:first').find('.' + e.verticalClass));
+      $(e).parent().addClass('keynav-container-vertical-selected');
+      //$(e).addClass(cur.verticalClass + '-selected');
     }
 
 	  kn.currentEl = e;
-    //console.warn(['keynav', 'focused', kn.currentEl.className]);
+    //console.warn(['keynav', 'focused', $(kn.currentEl).html()]);
   }
   $.keynav.getCurrent = function () {
 	  var kn = $.keynav;
@@ -108,29 +129,25 @@
 	  var nd = 0;
 	  var found = false;
 	  for(i=0;i<quad.length;i++) {
-		var e = quad[i];
-		nd = Math.sqrt(Math.pow(cur.pos.cx-e.pos.cx,2)+Math.pow(cur.pos.cy-e.pos.cy,2));
-		
-		  /*if ($(found).hasClass('.nav') || $(found).hasClass('.subnav')) {
-  	   console.log('keynav', 'hack', found);
-  	   return $.keynav.setActive($('.logo.tv-component').get(0), true);
-  	  }*/
-
-    //si up on ne peut pas attraper les menus
-		if(nd < od && ($(cur).parents('.slider').length == 0 ||
-		               $(cur).parents('.slider').length != $(e).parents('.nav, .subnav').length)) {
-		  console.log('keynav', 'found', e, direction, $(cur).parents('.slider').length + '!=' + $(e).parents('.nav, .subnav').length);
-			closest = e;
-			od = nd;
-			found = true;
-		}
+  		var e = quad[i];
+  		nd = Math.sqrt(Math.pow(cur.pos.cx-e.pos.cx,2)+Math.pow(cur.pos.cy-e.pos.cy,2));
+  
+      //si up on ne peut pas attraper les menus
+      //console.warn(['keynav.activateClosest', $(e).html()]);
+  		if(nd < od && ($(cur).parents('.slider').length == 0 ||
+  		               $(cur).parents('.slider').length != $(e).parents('.nav, .subnav').length)) {
+  		  console.log(['keynav', 'found', e, direction, $(cur).parents('.slider').length + '!=' + $(e).parents('.nav, .subnav').length]);
+  			closest = e;
+  			od = nd;
+  			found = true;
+  		}
 	  }
 	  if(found) {
 		  $.keynav.setActive(closest, true);
-	  } else if (direction == 'goUp') {
+	  } else if (direction == 'goUp' && $('.back:visible').length > 0) {
 	   $.keynav.setActive($('.back:visible').get(0), true);
 	  }
-    //console.warn('keynav', 'closest', closest);
+    //console.warn(['keynav', 'closest', closest]);
   }
   $.keynav.goLeft = function () {
 	  var cur = $.keynav.getCurrent();
@@ -221,20 +238,14 @@
 	  var cur = $.keynav.getCurrent();
 	  
     if ($(cur).hasClass(cur.verticalClass)) {
-	    //console.log('keynav', 'goUp', 'vertical', $(cur).prevAll('.' + cur.verticalClass + ':first'));
   	  var prev = $(cur).prevAll('.' + cur.verticalClass + ':first');
+	    //console.warn(['keynav.goUp', 'vertical', prev.length]);
   	  if (prev.length > 0) {
   	   $.keynav.setActive(prev.get(0), true);
   	   return;
   	  }
-    } /*else {
-	    var prev = $(cur).parents('.tv-container:first').prevAll('.tv-container:first').find('.' + cur.offClass)
-	    console.log('keynav', 'goUp', 'parents', $(cur).parents('.tv-container:first'));
-  	  if (prev.length > 0) {
-  	   $.keynav.setActive(prev.get(0), true);
-  	   return;
-  	  }
-	  }*/
+  	  return;
+    }
 
 	  var quad = $.keynav.quad(cur,function (dx,dy) { 
 										if((dx >= 0) && (Math.abs(dy) - dx) <= 0)
@@ -249,12 +260,14 @@
 	  var cur = $.keynav.getCurrent();
 
     if ($(cur).hasClass(cur.verticalClass)) {
-	    //console.log('keynav', 'goDown', 'vertical', $(cur).nextAll('.' + cur.verticalClass +':first'), '.' + cur.verticalClass +':first');
+      //return $.keynav.goUp();
   	  var next = $(cur).nextAll('.' + cur.verticalClass +':first');
+	    //console.warn(['keynav.goDown', 'vertical', next.length]);
   	  if (next.length > 0) {
   	   $.keynav.setActive(next.get(0), true);
   	   return;
   	  }
+  	  return;
     }
 
 	  var quad = $.keynav.quad(cur,function (dx,dy) { 
@@ -268,9 +281,9 @@
 
   $.keynav.activate = function () {
 	  var kn = $.keynav;
+	  console.warn(['keynav.activate', kn.currentEl]);
+	  //UI.goEnter($(kn.currentEl));
 	  //$(kn.currentEl).trigger('click');
-	  console.log('keynav', 'activate', kn.currentEl);
-	  //$(kn.currentEl).click();
   }
 
   /**

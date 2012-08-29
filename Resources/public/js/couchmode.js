@@ -1,16 +1,3 @@
-$.easing.crazy = function(t, millisecondsSince, startValue, endValue, totalDuration) {
-    if (t < endValue) {
-      return t + 0.2;
-    } else {
-      return endValue;
-    }
-    if (t<0.5) {
-        return t*4;
-    } else {
-        return -2*t + 3;  
-    } 
-};
-
 // -- Couchmode
 var Couchmode;
 Couchmode = {
@@ -19,13 +6,14 @@ Couchmode = {
   active_slider: null,
   timeout: null,
   timeoutdelay: 6000,
+  initialized: false,
   init: function(args) {
     console.log('Couchmode.start', args);
     var self = this;
     this.elmt = $('#couchmode');
     this.sliders = $('#couchmode-sliders .container', this.elmt).empty();
-    this.player = $('#couchmode-player', this.elmt).empty();
-    UI.appendLoader(this.player, 2000);
+    Player.init($('#couchmode-player', this.elmt));
+    UI.appendLoader(Player.elmt, 1000);
     self.elmt.show();
 
     self.active_slider == null
@@ -52,6 +40,16 @@ Couchmode = {
                 true, 
                 2);
     }
+
+    // initialize idle
+    if (this.initialized == false) {
+      $(window).mousemove(function(e) {
+        e.preventDefault();
+        //console.log('Couchmode.init', 'mousemove', 'Couchmode.idle', UI.currentView);
+        self.idle();
+      });
+      this.initialized = true;
+    }
   },
   start: function(datas, args) {
     console.log('Couchmode.init', datas);
@@ -63,7 +61,7 @@ Couchmode = {
     this.loadMenu(datas.menu, args);
     this.loadSliders(datas.sliders, function(){
       console.log('Couchmode.init', 'callback', $('.slider', self.sliders));
-      $('.tv-component:visible, #topbar .tv-component').keynav('tv-component-focused', 'tv-component-unfocused', 'tv-component-vertical');
+      UI.keynav();
       if (self.active_slider == null) {
         self.active_slider = $('.slider:first', self.sliders);
         self.active_slider.addClass('current');
@@ -80,12 +78,14 @@ Couchmode = {
   },
   idle: function() {
     //console.log('Couchmode.idle');
-    $('.overlay').show();
-    window.clearTimeout(this.timeout);
-    this.timeout = setTimeout(function(){
-      $('.overlay').fadeOut('slow');
-    }, this.timeoutdelay);
-
+    if (this.elmt != null && 
+        this.elmt.css('display') == 'block') {
+      $('.overlay').show();
+      window.clearTimeout(this.timeout);
+      this.timeout = setTimeout(function(){
+        $('.overlay').fadeOut('slow');
+      }, this.timeoutdelay);
+    }
   },
   loadSliders: function(datas, callback) {
     var self = this;
@@ -134,6 +134,7 @@ Couchmode = {
         }
       }
       $('.nav').addClass('tv-container-vertical');
+      $('.nav').show();
     }
     /*
     var subnav = $('.subnav ul', this.topbar);
@@ -141,7 +142,6 @@ Couchmode = {
       for (key in menu.subnav) {
         subnav.append('<li data-load-route="' + menu.subnav[key] + '" data-subnav="' + menu.subnav[key]  + '" class="tv-component' + (key == 0 ? ' tv-component-vertical-selected' : '') + '"><a href="#" class="item">' + menu.subnav[key].name  + '</a></li>');
       }
-    } else {
       $('.subnav').show();
     }*/
   },
@@ -160,25 +160,28 @@ Couchmode = {
     }
   },
   play: function(li) {
-    UI.removeLoader(this.player);
-    if (typeof this.player == 'undefined') {
-      this.player = $('#couchmode-player');
+    if (typeof Player.elmt == 'undefined') {
+      Player.elmt = $('#couchmode-player');
     }
+    UI.removeLoader(Player.elmt);
+
     var li = typeof li != 'undefined' ? li : $('li:first', this.active_slider);
-    UI.focus(li);
-    var play = Player.playProgram(li.data('id'), this.player);
-    if (play == false) { // pas de vidéo : on lance la popin
-      //li.click();
+    
+    if (parseInt(li.data('id')) > 0) {
+      UI.focus(li);
+      var play = Player.playProgram(li.data('id'));
+      if (play == false) { // pas de vidéo : on lance la popin
+        li.click();
+      }
+      // TODO : Player.loadMetaProgram({title: li.find('.title').text(), format:'', year:''});
+    } else {
+      console.warn(['Couchmode.play', 'error player', li.data('id')]);
     }
-    // TODO : Player.loadMetaProgram({title: li.find('.title').text(), format:'', year:''});
-    this.player.data('playing-id', li.data('id'))
   },
   unload: function() {
     console.log('Couchmode.unload');
     clearTimeout(this.timeout);
     this.active_slider = null;
     this.sliders.css('top', '0px');
-    Player.pause();
-    Player.stop();
   }
 }

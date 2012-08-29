@@ -29,11 +29,11 @@ Sliders = {
     this.elmt = $('#sliders');
     this.sliders = $('.container', this.elmt);
     this.sliders.empty();
-    UI.appendLoader(this.sliders);
+    UI.appendLoader(this.sliders, 2000);
     this.elmt.fadeIn();
 
     this.ui(action, args, function(){
-      $('.tv-component:visible, #topbar .tv-component').keynav('tv-component-focused', 'tv-component-unfocused', 'tv-component-vertical');
+      UI.keynav();
       UI.focus($('li:first', self.sliders)); //.addClass('tv-component-focused');
     });
   },
@@ -143,10 +143,10 @@ Sliders = {
       UI.subnav.append('<li class="tv-component tv-component-vertical' + (key == 0 ? '  tv-component-vertical-selected' : '') + '" data-load-view="sliders" data-load-route="tv-replay" data-keep-nav="1" data-subnav="' + this.subnav.replay[key]  + '">' + this.subnav.replay[key]  + '</li>');
     }
 
-    //$('.nav, .subnav').addClass('tv-container-vertical').show();
+    $('.nav, .subnav').show();
   },
   loadMenuSearch: function(facets) {
-    return;
+    /*
     if (facets.access != 'undefined') {
         console.log('Sliders.loadMenuSearch', facets.access);
         var access = facets.access.split(';');
@@ -154,7 +154,8 @@ Sliders = {
       for (k in access) {
         UI.nav.append('<li class="tv-component tv-component-vertical" data-load-view="sliders" data-load-route="search" data-keep-nav="1" data-nav="' + access[k]  + '">' + access[k].replace('myskreen', 'Google TV').replace('ios', 'iPhone, iPad').replace('externe', 'Autre')  + '</li>');
       }
-      UI.nav.parent().show();
+      $('.nav').show();
     }
+    */
   }
 }
