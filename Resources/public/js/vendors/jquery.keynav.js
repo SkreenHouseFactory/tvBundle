@@ -77,9 +77,11 @@
       $(cur).removeClass(e.onClass).addClass(e.offClass);
 
       //last focused
-      $('.tv-component-last-focused').removeClass('tv-component-last-focused');
-      $(cur).addClass('tv-component-last-focused').focus();
-  
+      if (UI.currentView != 'popin') {
+        $('.tv-component-last-focused').removeClass('tv-component-last-focused');
+        $(cur).addClass('tv-component-last-focused');
+      }
+
       //input
   	  if ($(cur).hasClass('tv-component-input')) {
   	   $(cur).blur();

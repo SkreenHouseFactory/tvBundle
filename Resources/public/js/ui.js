@@ -71,8 +71,6 @@ UI = {
         }
         //UI.appendLoader($('.modal .modal-body'));
         API.launchModal(url, function() {}, function() {
-          //console.warn('callbackOnLoad', $('.tv-component-focused'), $('.tv-component-last-focused'));
-          
 
           $('.modal input').addClass('tv-component tv-component-input');
           $('.modal input[type="text"], .modal input.text').attr('autocomplete', 'off');
