@@ -29,6 +29,12 @@ UI = {
                     });
   },
   loadView: function(route, view, args){
+
+    //android
+    if (typeof Webview != 'undefined') {
+      Webview.postMessage(['fullscreen']);
+    }
+
     var self = this;
     this.historyRoutes.push(this.currentRoute);
     this.historyViews.push(this.currentView);
@@ -124,11 +130,6 @@ UI = {
     if (Player.is_playing == true) {
       console.warn(['UI.unloadView', 'Player.stop()']);
       Player.stop();
-    }
-
-    //android
-    if (typeof Webview != 'undefined') {
-      Webview.postMessage(['fullscreen']);
     }
 
     //topbar
