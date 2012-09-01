@@ -345,7 +345,7 @@ UI = {
       Webview.postMessage(['browser', elmt.data('open-browser')]);
 
     // click
-    } else {
+    } else if (!document.location.href.match(/touch/gi)) {
       console.warn(['UI.goEnter', 'proxy', 'click']);
       elmt.trigger('click');
     }

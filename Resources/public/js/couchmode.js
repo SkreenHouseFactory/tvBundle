@@ -160,16 +160,19 @@ Couchmode = {
     }
   },
   play: function(li) {
+    var self = this;
     if (typeof Player.elmt == 'undefined') {
       Player.elmt = $('#couchmode-player');
     }
     UI.removeLoader(Player.elmt);
 
-    var li = typeof li != 'undefined' ? li : $('li:first', this.active_slider);
+    var li = typeof li != 'undefined' ? li : $('li:not(.static):first', this.active_slider);
     
     if (parseInt(li.data('id')) > 0) {
       UI.focus(li);
-      var play = Player.playProgram(li.data('id'));
+      var play = Player.playProgram(li.data('id'), function(){
+        self.next();
+      });
       if (play == false) { // pas de vidéo : on lance la popin
         li.click();
       }
