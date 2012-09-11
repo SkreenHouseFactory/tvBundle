@@ -7,6 +7,10 @@
 @focusShadow: 0px 0px 10px yellow;
 @focusShadowInset: inset 0px 0px 10px #6391DE;
 
+html.touch {
+
+}
+
 html {
   background: transparent;
   padding: 0;
@@ -54,108 +58,6 @@ html {
   margin: 25% 35%;
 }
 
-.modal {
-  border: 5px solid #555;
-  background-color: #111;
-  color: white;
-  font-size: 1.2em;
-
-  .modal-header {
-    border-bottom: 1px solid #222;
-    
-    .btn-group {
-      margin: 9px 0;
-    }
-  }
-  .modal-body {
-    height: 400px;
-    overflow: hidden;
-    position: relative;
-
-    .fav {
-      display: none;
-    }
-
-    #part-body-left {
-      overflow: hidden;
-      
-      .tv-container-vertical {
-        position: absolute;
-        width: 95%;
-        z-index: 0;
-        
-        h6 {
-          font-size: 13px;
-        }
-        
-      }
-    }
-  }
-  .modal-footer {
-    background-color: #000;
-    border-top: 1px solid #222;
-  }
-
-  .close {
-    display: none;
-  }
-
-  .nav-tabs {
-    border-bottom: none;
-  }
-  .modal-footer {
-    border: none;
-  }
-
-  .table tr.tv-component-focused th, .table tr.tv-component-focused td {
-    border-top: 0 !important;
-  }
-
-  .table-striped tbody tr:nth-child(odd) td, .table-striped tbody tr:nth-child(odd) th {
-    background-color: #333;
-  }
-  .table-striped tbody tr:nth-child(odd):hover td, .table-striped tbody tr:hover td {
-    background-color: #222;
-  }
-  .table th, .table td {
-    border-top: 1px solid #222;
-    height: 50px;
-    /*transition: background-position 0.1s linear;
-    background-repeat: repeat-x;
-    background-image: linear-gradient(top, #222, #666);*/
-    
-    .table {
-      margin-left: 30px;
-      width: 90%;
-
-      th, td {
-        height: 20px;
-        font-size: 0.9em;
-      }
-    }
-  }
-  
-  h3 {
-    .btn {
-      font-weight: normal;
-    }
-  }
-
-  h4 {
-    background: black;
-    padding: 5px;
-    border-top: 5px solid #555;
-    text-align: center;
-    font-weight: normal;
-  }
-
-  .paymentPopin form label[for="inscrit"], .paymentPopin form label[for="inscrit_1"] {
-    color: white;
-    b {
-      font-weight: normal;
-    }
-  }
-}
 
 #splash {
   text-align: center;

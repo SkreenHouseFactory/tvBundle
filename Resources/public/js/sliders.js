@@ -71,10 +71,10 @@ Sliders = {
       this.loadMenuTvReplay();
     }
     var params = $.extend({with_best_offer: 1, 
-                  keep_nav: args.keep_nav, 
-                  scroll: args.scroll, 
-                  nav: typeof args.nav != 'undefined' ? args.nav : '', 
-                  subnav: typeof args.subnav != 'undefined' ? args.subnav : ''}, this.params);
+                           keep_nav: args.keep_nav, 
+                           scroll: args.scroll, 
+                           nav: typeof args.nav != 'undefined' ? args.nav : '', 
+                           subnav: typeof args.subnav != 'undefined' ? args.subnav : ''}, this.params);
 
     API.query('GET',
               'schedule/tvreplay.json',
@@ -85,9 +85,9 @@ Sliders = {
                 //sliders
                 nb = 0;
                 for(k in datas) {
-                    if (datas.hasOwnProperty(k)) {
-                        nb++;
-                    }
+                  if (datas.hasOwnProperty(k)) {
+                      nb++;
+                  }
                 }
                 for (k in datas) {
                   console.log('Sliders.initTvreplay', 'slider', datas[k], nb);

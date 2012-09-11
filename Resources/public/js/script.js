@@ -1,4 +1,5 @@
 // -- init
+console.log('API.init');
 API.init(function(){
   // -- console
   if( API.config.env != 'dev' ) {
@@ -7,11 +8,15 @@ API.init(function(){
         warn: function() {},
         error: function() {}
     };
+
+    console.log('API.init', 'callback');
   }
 });
 
 // -- ready
 $(document).ready(function(){
+
+	UI.init();
 
   //touch event
   if (document.location.href.match(/touch/gi)) {
@@ -69,7 +74,6 @@ $(document).ready(function(){
   //$('.user-on').hide();
   Skhf.session = new BaseSession(function(){
     console.log('script', 'context', API.context);
-    UI.init();
     UI.loadView('splash', 'splash');
     //UI.loadUserPrograms();
   });

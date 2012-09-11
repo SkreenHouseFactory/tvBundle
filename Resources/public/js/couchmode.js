@@ -185,6 +185,8 @@ Couchmode = {
     console.log('Couchmode.unload');
     clearTimeout(this.timeout);
     this.active_slider = null;
-    this.sliders.css('top', '0px');
+    if (this.sliders) {
+      this.sliders.css('top', '0px');
+    }
   }
 }

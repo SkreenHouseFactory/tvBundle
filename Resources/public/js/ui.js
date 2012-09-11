@@ -7,9 +7,36 @@ UI = {
   currentView: 'splash',
   historyRoutes: [],
   historyViews: [],
+  touch: false,
+  dpad: false,
   badge_notification: '<span class="badge badge-important">%count%</span>',
   loader: '<div class="progress progress-striped active"><div class="bar" style="width:0%"></div></div>',
   init: function() {
+    console.log(['UI.init', 'modernizr', $('html').attr('class')]);
+
+    //playbook
+    if (navigator.userAgent.match(/playbook/gi)) {
+      $('html').addClass('playbook');
+      $('.modal').hide(); // hack
+    //ios
+    } else if (navigator.userAgent.match(/ip(hone|ad|od)/gi)) {
+      $('html').addClass('ios');
+      Player.type = 'html5';
+    //android
+    } else if (navigator.userAgent.match(/android/gi) || document.location.href.match(/android/gi)) {
+      $('html').addClass('android');
+      Player.type = 'android';
+    }
+    //touch
+    if (document.location.href.match(/touch/gi) || Modernizr.touch) {
+      console.log(['UI.init', 'touch']);
+      this.touch = true;
+    //dpad
+    } else if (typeof Webview != 'undefined') {
+      console.log(['UI.init', 'dpad']);
+      this.dpad = true;
+    }
+    
     this.topbar = $('#topbar');
     this.userblock = $('#user');
     this.nav = $('.nav ul', this.topbar);
@@ -149,6 +176,10 @@ UI = {
     if (Skhf.session.datas.email) {
       $('.user', this.userblock).html(Skhf.session.datas.email);
       this.userblock.show();
+      //TO FINISH :
+      if (typeof Skhf.session.datas.notifications['programs'] != 'undefined') {
+        $('.notifications').addClass('with-badge').append($(this.badge_notification).html(Skhf.session.datas.notifications['programs']['new'].length));
+      }
     } else {
       $('.user', this.userblock).empty();
       this.userblock.hide();
@@ -218,14 +249,14 @@ UI = {
     $('.slider', slider.parent()).removeClass('down up current');
     if (direction == 'down' && slider.next('.slider.slide-v').length > 0) {
       //slider.parent().css({top: '-=240'});
-      slider.parent().animate({top: '-=240'}, 0, 'linear', function(){
+      slider.parent().animate({top: '-=240'}, 200, 'linear', function(){
         slider.addClass('down');
         slider.prev('.slider.slide-v').addClass('current');
         slider.prev('.slider.slide-v').prev('.slider.slide-v').addClass('up');
       });
     } else if (direction == 'up' && slider.prev('.slider.slide-v').length > 0) {
       //slider.parent().css({top: '+=240'});
-      slider.parent().animate({top: '+=240'}, 0, 'linear',function() {
+      slider.parent().animate({top: '+=240'}, 200, 'linear',function() {
         slider.addClass('up');
         slider.next('.slider.slide-v').addClass('current');
         slider.next('.slider.slide-v').next('.slider.slide-v').addClass('down');
@@ -236,7 +267,7 @@ UI = {
     //console.log('Couchmode.slideH', slider, direction);
     if (direction == 'left') {
       //$('ul', slider).css({left: '+=155'});
-      $('ul', slider).animate({left: '+=155'}, 200, 'crazy');
+      $('ul', slider).animate({left: '+=155'}, 200, 'linear');
     } else if (direction == 'right') {
       //$('ul', slider).css({left: '-=155'});
       $('ul', slider).animate({left: '-=155'}, 200, 'linear');
@@ -345,7 +376,7 @@ UI = {
       Webview.postMessage(['browser', elmt.data('open-browser')]);
 
     // click
-    } else if (!document.location.href.match(/touch/gi)) {
+    } else if (this.touch == false) {
       console.warn(['UI.goEnter', 'proxy', 'click']);
       elmt.trigger('click');
     }

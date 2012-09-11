@@ -4,7 +4,7 @@ service:
     url: 'http://www.myskreen.com'
 page:
     title:
-        home: Trouver, voir et revoir
+        home: Couchmode
         redirect: Redirection en cours ...
 player:
     live:

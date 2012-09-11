@@ -44,7 +44,23 @@
 	  e.onClass = onClass;
 	  e.offClass = offClass;
 	  e.verticalClass = verticalClass;
-    if (typeof Webview == 'undefined' || document.location.href.match(/touch/gi)) {
+	  
+    if (UI.touch && typeof e.ontouchstart != 'undefined') {
+  	  e.ontouchstart = function (event) {
+  	   //event.preventDefault();
+  	   //event.stopPropagation();
+       console.warn(['keynav.reg', 'ontouchstart', e.className]);
+       Couchmode.idle();
+       //if (UI.getFocusedElmt() == $(this)) {
+       //  $(this).trigger('click');
+       //} else {
+	       $.keynav.setActive(this);
+         $(this).trigger('click');
+         //UI.goEnter();
+       //}
+       return false;
+  	  };
+    } else if (UI.dpad == false) {
   	  e.onmouseover = function (event) {
        console.warn(['keynav.reg', 'onmouseover', e.className]);
 	     $.keynav.setActive(this);
