@@ -154,7 +154,7 @@ UI = {
     }
 
     //player
-    if (Player.is_playing == true) {
+    if (Player.state == 'playing') {
       console.warn(['UI.unloadView', 'Player.stop()']);
       Player.stop();
     }
@@ -205,7 +205,7 @@ UI = {
     }
   },
   togglePlaylistProgram: function(trigger){
-    var value = trigger.parent().data('id');
+    var value = trigger.parent().data('load-player');
     var remove = trigger.hasClass('btn-primary') || trigger.hasClass('btn-danger') ? true : false;
     if (Skhf.session.datas.email) {
       API.togglePreference('like', value, trigger, function(value){
@@ -249,14 +249,14 @@ UI = {
     $('.slider', slider.parent()).removeClass('down up current');
     if (direction == 'down' && slider.next('.slider.slide-v').length > 0) {
       //slider.parent().css({top: '-=240'});
-      slider.parent().animate({top: '-=240'}, 200, 'linear', function(){
+      slider.parent().animate({top: '-=240'}, 400, 'linear', function(){
         slider.addClass('down');
         slider.prev('.slider.slide-v').addClass('current');
         slider.prev('.slider.slide-v').prev('.slider.slide-v').addClass('up');
       });
     } else if (direction == 'up' && slider.prev('.slider.slide-v').length > 0) {
       //slider.parent().css({top: '+=240'});
-      slider.parent().animate({top: '+=240'}, 200, 'linear',function() {
+      slider.parent().animate({top: '+=240'}, 400, 'linear',function() {
         slider.addClass('up');
         slider.next('.slider.slide-v').addClass('current');
         slider.next('.slider.slide-v').next('.slider.slide-v').addClass('down');
@@ -325,6 +325,7 @@ UI = {
   goEnter: function(isEnter){
 
     var elmt = this.getFocusedElmt();
+    console.warn(['UI.goEnter', 'play-program-id', elmt.data('play-program-id')]);
 
     //input
     if (elmt.hasClass('tv-component-input') && (!elmt.val() || typeof isEnter == 'undefined')) { //
@@ -375,10 +376,22 @@ UI = {
       console.warn(['UI.goEnter', 'open-browser', elmt.data('open-browser')]);
       Webview.postMessage(['browser', elmt.data('open-browser')]);
 
+    //slider ?
+    } else if (elmt.data('play-program-id')) {
+      console.warn(['UI.goEnter', 'play-program-id', elmt.data('play-program-id')]);
+      if (elmt.parents('.slider.couchmode').length == 0 || 
+        Player.elmt.data('playing-id') == elmt.data('play-program-id')) {
+        UI.load('fiche', 'popin', {id: elmt.data('play-program-id')});
+      } else {
+        Couchmode.play(elmt);
+      }
+
     // click
     } else if (this.touch == false) {
-      console.warn(['UI.goEnter', 'proxy', 'click']);
+      console.warn(['UI.goEnter', 'trigger', 'click']);
       elmt.trigger('click');
+    } else {
+      console.warn(['UI.goEnter', 'no action', 'touch' + this.touch]);
     }
   },
   goReturn: function(){
@@ -388,6 +401,13 @@ UI = {
     } else {
       this.load('splash', 'splash', {});
     }
+  },
+  // -- error
+  error: function(msg) {
+    $('#error').html(msg).fadeIn();
+    setTimeout(function() {
+                 $('#error').fadeOut('slow').empty();
+               }, 3000);
   },
   // -- insert loader
   appendLoader: function(elmt) {

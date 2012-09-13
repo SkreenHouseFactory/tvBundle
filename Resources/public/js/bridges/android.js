@@ -2,13 +2,14 @@
 var Webview;
 Webview = {
   onMessage: function(args) {
-    //console.warn(['Webview.onMessage', args[0], args[1]]);
+    console.warn(['Webview.onMessage', args[0], args[1]]);
     switch (args[0]) {
       case 'init':
         Player.setType('android');
       break;
       case 'videoInfo':
       case 'videoError':
+        UI.error('Erreur : ' + args[2]);
         console.warn(['Android videoError', args[1], args[2]]);
       case 'videoStart':
       case 'videoEnd':
@@ -29,19 +30,19 @@ Webview = {
 			      UI.goLeft();
           break;
           case 20: //down
-            console.warn(['Webview.keyCode', 'UI.goDown']);
+            //console.warn(['Webview.keyCode', 'UI.goDown']);
             //UI.goUp();
 			      UI.goDown();
           break;
           case 19: //up
-            console.warn(['Webview.keyCode', 'UI.goUp']);
+            //console.warn(['Webview.keyCode', 'UI.goUp']);
 			      UI.goUp();
           break;
           case 13: //enter : attention already binded by jquery
           case 23: //enter
           //case 66: //enter kb
 			      UI.goEnter(key);
-            console.warn(['Webview.keyCode', 'UI.goEnter', key]);
+            //console.warn(['Webview.keyCode', 'UI.goEnter', key]);
           break;
           case 4: //return
             //console.warn(['Webview.keyCode', 'UI.goReturn']);
@@ -77,7 +78,7 @@ Webview = {
   postMessage: function(args) {
     if (typeof App != 'undefined') {
       //alert('Webview success');
-      //console.warn(['Webview.postMessage', args[0], args[1], args[2]]);
+      console.warn(['Webview.postMessage', args[0], args[1], args[2]]);
       switch (args[0]) {
         case 'player':
           switch (args[1]) {

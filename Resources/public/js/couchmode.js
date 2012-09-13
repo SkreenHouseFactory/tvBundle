@@ -26,7 +26,8 @@ Couchmode = {
     } else {
       API.query('GET',
                 'couchmode.json',
-                { onglet: args.onglet, 
+                {
+                  onglet: args.onglet, 
                   session_uid:args.session_uid, 
                   program_id: args.program_id,
                   nav: args.nav,
@@ -77,6 +78,11 @@ Couchmode = {
     self.idle();
   },
   idle: function() {
+    return;
+    //if (typeof Webview != 'undefined') {
+    //  return;
+    //}
+    
     //console.log('Couchmode.idle');
     if (this.elmt != null && 
         this.elmt.css('display') == 'block') {
@@ -93,25 +99,25 @@ Couchmode = {
     var nb_sliders = datas.length;
     for (key in datas) {
       new BaseSlider({
-                        title: datas[key].name, 
-                        data_id: datas[key].id,
-                        programs: datas[key].programs,
-                        url: datas[key].url
-                      }, 
-                      function(slider){
-                        if ($('ul.items li', slider).length > 0) {
-                          self.sliders.append(slider.addClass('couchmode slide-h slide-v').data('slide-v-step', 240));
-                          //console.log('Couchmode.loadSliders', 'callback', $('.slider', self.sliders).length, datas.length);
-                          if (typeof callback != 'undefined' && $('.slider', self.sliders).length == nb_sliders) {
-                            //console.log('Couchmode.loadSliders', 'callback', key);
-                            callback();
-                          }
-                        } else {
-                          nb_sliders = nb_sliders - 1;
-                          console.warn('Couchmode.loadSliders', 'slider ignored : no programs', slider);
-                          //self.sliders.append(slider.addClass('hide'));
+                      title: datas[key].name, 
+                      data_id: datas[key].id,
+                      programs: datas[key].programs,
+                      url: datas[key].url
+                     }, 
+                     function(slider){
+                      if ($('ul.items li', slider).length > 0) {
+                        self.sliders.append(slider.addClass('couchmode slide-h slide-v').data('slide-v-step', 240));
+                        //console.log('Couchmode.loadSliders', 'callback', $('.slider', self.sliders).length, datas.length);
+                        if (typeof callback != 'undefined' && $('.slider', self.sliders).length == nb_sliders) {
+                          //console.log('Couchmode.loadSliders', 'callback', key);
+                          callback();
                         }
-                      });
+                      } else {
+                        nb_sliders = nb_sliders - 1;
+                        console.warn('Couchmode.loadSliders', 'slider ignored : no programs', slider);
+                        //self.sliders.append(slider.addClass('hide'));
+                      }
+                     });
     }
   },
   loadMenu: function(menu, args) {
@@ -167,10 +173,10 @@ Couchmode = {
     UI.removeLoader(Player.elmt);
 
     var li = typeof li != 'undefined' ? li : $('li:not(.static):first', this.active_slider);
-    
-    if (parseInt(li.data('id')) > 0) {
+
+    if (parseInt(li.data('play-program-id')) > 0) {
       UI.focus(li);
-      var play = Player.playProgram(li.data('id'), function(){
+      var play = Player.playProgram(li.data('play-program-id'), function(){
         self.next();
       });
       if (play == false) { // pas de vidéo : on lance la popin

@@ -98,30 +98,11 @@ $(document).ready(function(){
     console.log('script', 'modal', "on('hide')", $('.tv-component-last-focused'));
     UI.keynav();
     UI.focus($('.tv-component-last-focused')); //$('div:not(#toppbar, .modal) .tv-component:first'));
-    Player.resume(Couchmode.player);
+    Player.resume();
   });
   $('.modal .close').live('click', function(e){
     $('.modal').modal('hide');
   });
-
-  // -- sliders
-  $('.slider:not(.couchmode) li').live('click', function(e) {
-    e.preventDefault();
-    console.log('script', 'slider', 'li click', $(this));
-    UI.load('fiche', 'popin', {id: $(this).data('id')});
-    return false;
-  });
-  $('.slider.couchmode li').live('click', function(e) {
-    e.preventDefault();
-    console.warn(['script', 'couchmode', 'li click', Player.elmt, $(this).data('id')]);
-    if (Player.elmt.data('playing-id') == $(this).data('id')) {
-      Player.pause($('#couchmode-player'));
-      UI.load('fiche', 'popin', {id: $(this).data('id')});
-    } else {
-      Couchmode.play($(this));
-      //UI.load('show');
-    }
-    return false;
-  }); 
+ 
   //document.location = '/app.php/gtv?microtime=' + new Date();
 });
