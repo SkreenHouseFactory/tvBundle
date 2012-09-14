@@ -152,17 +152,33 @@ Couchmode = {
     }*/
   },
   next: function() {
+    var self = this;
     var next = $('.tv-component-focused', this.active_slider).next();
     if (next.length > 0) {
-      UI.focus(next);
-      this.play(next);
+      if (Player.state == 'playing' || Player.state == 'paused') {
+        Player.stop();
+      }
+      setTimeout(function(){
+        UI.focus(next);
+        self.play(next);
+      }, 1000);
+    } else {
+      UI.error('Plus de programmes !');
     }
   },
   prev: function() {
+    var self = this;
     var prev = $('.tv-component-focused', this.active_slider).prev();
     if (prev.length > 0) {
-      UI.focus(prev);
-      this.play(prev);
+      if (Player.state == 'playing' || Player.state == 'paused') {
+        Player.stop();
+      }
+      setTimeout(function(){
+        UI.focus(prev);
+        self.play(prev);
+      }, 1000);
+    } else {
+      UI.error('Plus de programmes !');
     }
   },
   play: function(li) {
@@ -193,6 +209,7 @@ Couchmode = {
     this.active_slider = null;
     if (this.sliders) {
       this.sliders.css('top', '0px');
+      this.sliders.empty();
     }
   }
 }

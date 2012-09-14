@@ -95,9 +95,6 @@ UI = {
         //console.log('UI.load', 'splash', this.topbar);
       break;
       case 'popin':
-        if (typeof Webview != 'undefined') {
-          Webview.postMessage(['player', 'pause']);
-        }
         url = API.config.popin + route + '?';
         for (var key in args) {
           url += key + '=' + args[key] + '&';
@@ -148,9 +145,15 @@ UI = {
     }
 
     //couchmode
-    if (this.currentView == 'couchmode') {
+    if (this.currentView == 'couchmode' && view != 'popin') {
       console.warn(['UI.unloadView', 'Couchmode.unload()']);
       Couchmode.unload();
+    }
+
+    //sliders
+    if (this.currentView == 'sliders' && view != 'popin') {
+      console.warn(['UI.unloadView', 'Sliders.unload()']);
+      Sliders.unload();
     }
 
     //player
@@ -302,7 +305,7 @@ UI = {
       this.slideV(slider, 'up');
     }
     //data-slide-v
-    if (elmt.data('slide-v-step')) {
+    if (elmt.prev().data('slide-v-step')) {
       //console.log('goUp', elmt, elmt.parents('.tv-container-vertical:first'));
       elmt.parents('.tv-container-vertical:first').animate({top: '+=' + elmt.data('slide-v-step')}, 200);
     }
@@ -325,7 +328,7 @@ UI = {
   goEnter: function(isEnter){
 
     var elmt = this.getFocusedElmt();
-    console.warn(['UI.goEnter', 'play-program-id', elmt.data('play-program-id')]);
+    //console.warn(['UI.goEnter', 'play-program-id', elmt.data('play-program-id')]);
 
     //input
     if (elmt.hasClass('tv-component-input') && (!elmt.val() || typeof isEnter == 'undefined')) { //
@@ -368,7 +371,7 @@ UI = {
         args.subnav = elmt.data('subnav');
         args.nav = $('.nav .selected', UI.topbar).length > 0 ? $('.nav .selected', UI.topbar).data('nav') : '';
       }
-      console.warn(['UI.goEnter', 'load-route', args, elmt]);
+      //console.warn(['UI.goEnter', 'load-route', args, elmt]);
       UI.load(elmt.data('load-route'), elmt.data('load-view'), args);
 
     // browser ?
@@ -378,21 +381,24 @@ UI = {
 
     //slider ?
     } else if (elmt.data('play-program-id')) {
-      console.warn(['UI.goEnter', 'play-program-id', elmt.data('play-program-id')]);
+      console.warn(['UI.goEnter', elmt.parents('.slider.couchmode').length , 'play-program-id:' + elmt.data('play-program-id')]);
       if (elmt.parents('.slider.couchmode').length == 0 || 
-        Player.elmt.data('playing-id') == elmt.data('play-program-id')) {
+          Player.elmt.data('playing-id') == elmt.data('play-program-id')) {
+        if (Player.state == 'playing') {
+          Player.pause();
+        }
         UI.load('fiche', 'popin', {id: elmt.data('play-program-id')});
       } else {
         Couchmode.play(elmt);
       }
 
     // click
-    } else if (this.touch == false) {
+    } else { //if (this.touch == false) { //gtv : touch == true !!!
       console.warn(['UI.goEnter', 'trigger', 'click']);
       elmt.trigger('click');
-    } else {
-      console.warn(['UI.goEnter', 'no action', 'touch' + this.touch]);
-    }
+    } //else {
+    //  console.warn(['UI.goEnter', 'no action', 'touch' + this.touch]);
+    //}
   },
   goReturn: function(){
     //btn
@@ -406,7 +412,7 @@ UI = {
   error: function(msg) {
     $('#error').html(msg).fadeIn();
     setTimeout(function() {
-                 $('#error').fadeOut('slow').empty();
+                 $('#error').hide().empty();
                }, 3000);
   },
   // -- insert loader

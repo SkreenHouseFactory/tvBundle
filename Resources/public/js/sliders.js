@@ -33,8 +33,9 @@ Sliders = {
     this.elmt.fadeIn();
 
     this.ui(action, args, function(){
+      console.log('Sliders.ui', 'callback', $('li.tv-component:first', self.sliders));
       UI.keynav();
-      UI.focus($('li:first', self.sliders)); //.addClass('tv-component-focused');
+      UI.focus($('li.tv-component:first', self.sliders)); //.addClass('tv-component-focused');
     });
   },
   ui: function(action, args, callback) {
@@ -59,7 +60,7 @@ Sliders = {
         slider.addClass('slide-v').data('slide-v-step', 240);
       }
       self.sliders.append(slider.addClass('sliders slide-h'));
-      console.log('Sliders.load', 'callback', $('.slider', self.sliders).length, sliders_length);
+      console.log('Sliders.load', 'callback ?', $('.slider', self.sliders).length, '=', sliders_length, callback);
       if (typeof callback != 'undefined' && $('.slider', self.sliders).length == sliders_length) {
         callback();
       }
@@ -86,7 +87,7 @@ Sliders = {
                 nb = 0;
                 for(k in datas) {
                   if (datas.hasOwnProperty(k)) {
-                      nb++;
+                    nb++;
                   }
                 }
                 for (k in datas) {
@@ -157,5 +158,11 @@ Sliders = {
       $('.nav').show();
     }
     */
+  },
+  unload: function() {
+    console.log('Sliders.unload');
+    if (this.sliders) {
+      this.sliders.empty();
+    }
   }
 }

@@ -2,7 +2,8 @@
 var Webview;
 Webview = {
   onMessage: function(args) {
-    console.warn(['Webview.onMessage', args[0], args[1]]);
+    Couchmode.idle();
+    //console.warn(['Webview.onMessage', args[0], args[1]]);
     switch (args[0]) {
       case 'init':
         Player.setType('android');
@@ -16,8 +17,6 @@ Webview = {
         Couchmode.next();
       break;
       case 'keyCode':
-
-        Couchmode.idle();
 
         var key = parseInt(args[1]);
         switch (key) {
@@ -78,7 +77,7 @@ Webview = {
   postMessage: function(args) {
     if (typeof App != 'undefined') {
       //alert('Webview success');
-      console.warn(['Webview.postMessage', args[0], args[1], args[2]]);
+      //console.warn(['Webview.postMessage', args[0], args[1], args[2]]);
       switch (args[0]) {
         case 'player':
           switch (args[1]) {

@@ -84,10 +84,11 @@
     //new component
     $(e).removeClass(e.offClass).addClass(e.onClass);
     if ($(e).hasClass('tv-component-input')) {
+      console.warn(['keynav.setActive', 'tv-component-input', 'focus']);
       $(e).focus();
     }
 
-    //last component
+    //treatements
     if (e != cur) {
       //console.warn(['keynav.setActive1', e.onClass]);
       $(cur).removeClass(e.onClass).addClass(e.offClass);

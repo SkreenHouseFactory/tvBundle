@@ -94,11 +94,16 @@ $(document).ready(function(){
   });
 
   // -- modal
+  $('.modal').on('show', function(e){
+    $('.tv-component-focused').addClass('tv-component-last-focused');
+  });
   $('.modal').on('hide', function(e){
-    console.log('script', 'modal', "on('hide')", $('.tv-component-last-focused'));
+    console.log(['script', 'modal', "on('hide')", $('.tv-component-last-focused').length]);
     UI.keynav();
     UI.focus($('.tv-component-last-focused')); //$('div:not(#toppbar, .modal) .tv-component:first'));
-    Player.resume();
+    if (Player.state == 'paused') {
+      Player.resume();
+    }
   });
   $('.modal .close').live('click', function(e){
     $('.modal').modal('hide');
