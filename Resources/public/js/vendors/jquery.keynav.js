@@ -97,6 +97,7 @@
       if (UI.currentView != 'popin') {
         $('.tv-component-last-focused').removeClass('tv-component-last-focused');
         $(cur).addClass('tv-component-last-focused');
+        console.log('keynav.setActive', 'tv-component-last-focused', $(cur));
       }
 
       //input
@@ -155,7 +156,7 @@
       //console.warn(['keynav.activateClosest', $(e).html()]);
   		if(nd < od && ($(cur).parents('.slider').length == 0 ||
   		               $(cur).parents('.slider').length != $(e).parents('.nav, .subnav').length)) {
-  		  console.log(['keynav', 'found', e, direction, $(cur).parents('.slider').length + '!=' + $(e).parents('.nav, .subnav').length]);
+  		  //console.log(['keynav', 'found', e, direction, $(cur).parents('.slider').length + '!=' + $(e).parents('.nav, .subnav').length]);
   			closest = e;
   			od = nd;
   			found = true;

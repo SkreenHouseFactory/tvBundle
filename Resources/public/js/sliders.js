@@ -56,7 +56,7 @@ Sliders = {
                                scroll: args.scroll});
     console.log('Sliders.load', args);
     new BaseSlider(args, function(slider){
-      if ($('.slider', self.sliders).length > 0) {
+      if ($('.slider', self.sliders).length > 1) {
         slider.addClass('slide-v').data('slide-v-step', 240);
       }
       self.sliders.append(slider.addClass('sliders slide-h'));

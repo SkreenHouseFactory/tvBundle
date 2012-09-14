@@ -50,12 +50,20 @@ UI = {
       var view = 'couchmode';
     }
 
-    this.unloadView(this.currentRoute, view, args, 
+    this.unloadView(this.currentRoute, 
+                    view, 
+                    args, 
                     function() {
                       self.loadView(route, view, args);
                     });
   },
   loadView: function(route, view, args){
+    
+    //hack input blur
+    if ($(':focus').length > 0) {
+      $(':focus').blur();
+    }    
+    //if (view != 'splash') return;
 
     //android
     if (typeof Webview != 'undefined') {
@@ -254,15 +262,17 @@ UI = {
       //slider.parent().css({top: '-=240'});
       slider.parent().animate({top: '-=240'}, 400, 'linear', function(){
         slider.addClass('down');
-        slider.prev('.slider.slide-v').addClass('current');
-        slider.prev('.slider.slide-v').prev('.slider.slide-v').addClass('up');
+        var current = slider.prev('.slider.slide-v');
+        current.addClass('current');
+        current.prev('.slider.slide-v').addClass('up');
       });
-    } else if (direction == 'up' && slider.prev('.slider.slide-v').length > 0) {
+    } else if (direction == 'up' && parseInt(slider.parent().css('top')) < 0) {
       //slider.parent().css({top: '+=240'});
       slider.parent().animate({top: '+=240'}, 400, 'linear',function() {
         slider.addClass('up');
-        slider.next('.slider.slide-v').addClass('current');
-        slider.next('.slider.slide-v').next('.slider.slide-v').addClass('down');
+        var current = slider.next('.slider.slide-v');
+        current.addClass('current');
+        current.next('.slider.slide-v').addClass('down');
       });
     }
   },
@@ -298,12 +308,22 @@ UI = {
   },
   goUp: function(){
     var elmt = UI.getFocusedElmt();
-	  $.keynav.goUp();
-    //slider
-    var slider = elmt.parents('.slide-v:first');
-    if (slider.length > 0) {
+    //slider vertical
+    var slider = elmt.parents('.slider:first');
+    if (parseInt(slider.parent().css('top')) < 0) {
+      //console.log('UI.goUp', '!!!!!');
       this.slideV(slider, 'up');
     }
+    
+    var slider = elmt.parents('.slider:first').prev();
+    if (slider.length > 0) {
+      elmt.parent().css('left', '0px');
+      UI.focus($('li.tv-component:first', slider));
+      //console.log('UI.goUp', 'focus prev slider', $('li.tv-component:first', slider), slider);
+      return;
+    }
+
+	  $.keynav.goUp();
     //data-slide-v
     if (elmt.prev().data('slide-v-step')) {
       //console.log('goUp', elmt, elmt.parents('.tv-container-vertical:first'));
@@ -311,14 +331,23 @@ UI = {
     }
   },
   goDown: function(){
-    //return this.goUp();
     var elmt = UI.getFocusedElmt();
-	  $.keynav.goDown();
-    //slider
-    var slider = elmt.parents('.slide-v:first');
-    if (slider.length > 0) {
+    //slider vertical
+    var slider = elmt.parents('.slider:first');
+    if (slider.length > 0 && slider.next('.slider.slide-v')) {
+      //console.log('UI.goDown', '!!!!!');
       this.slideV(slider, 'down');
     }
+
+    var slider = elmt.parents('.slider:first').next();
+    if (slider.length > 0) {
+      elmt.parent().css('left', '0px');
+      UI.focus($('li.tv-component:first', slider));
+      //console.log('UI.goDown', 'focus next slider', $('li.tv-component:first', slider), slider);
+      return;
+    }
+
+    $.keynav.goDown();
     //data-slide-v
     if (elmt.data('slide-v-step')) {
       console.log('goDown', elmt, elmt.parents('.tv-container-vertical:first'));
