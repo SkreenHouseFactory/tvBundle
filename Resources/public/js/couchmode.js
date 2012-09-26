@@ -106,7 +106,7 @@ Couchmode = {
                      }, 
                      function(slider){
                       if ($('ul.items li', slider).length > 0) {
-                        slider.find('h2').prepend('<span class="pull-right">Plus de choix : "Flêche bas" <i class="icon-chevron-down icon-white"></i></span>')
+                        slider.find('h2').prepend('<span class="pull-right">Plus de choix : "Flèche bas" <i class="icon-chevron-down icon-white"></i></span>')
                         self.sliders.append(slider.addClass('couchmode slide-h slide-v').data('slide-v-step', 240));
                         //console.log('Couchmode.loadSliders', 'callback', $('.slider', self.sliders).length, datas.length);
                         if (typeof callback != 'undefined' && $('.slider', self.sliders).length == nb_sliders) {

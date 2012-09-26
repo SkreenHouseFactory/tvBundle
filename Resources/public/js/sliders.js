@@ -5,15 +5,17 @@ Sliders = {
   sliders: null,
   params: {img_width: 150,
          img_height: 200},
-  nav: {replay: ['Plus d\'une semaine', 
+  nav: {replay: [
+                 //'Plus d\'une semaine', 
                  'La semaine dernière', 
-                 'Hier', 
+                 //'Hier', 
                  'Hier soir', 
                  'En ce moment', 
                  'Ce soir', 
-                 'Demain', 
+                 'Demain soir', 
                  'Cette semaine', 
-                 'Au delà']
+                 //'Au delà'
+                 ]
   },
   subnav: {replay: ['Tous les genres', 
                     'Films', 
@@ -137,7 +139,7 @@ Sliders = {
     $('.onglet span', UI.topbar).html('TV & Replay');
     //nav
     for (key in this.nav.replay) {
-      UI.nav.append('<li class="tv-component tv-component-vertical' + (key == 4 ? '  tv-component-vertical-selected' : '') + '" data-load-view="sliders" data-load-route="tv-replay" data-keep-nav="1" data-nav="' + this.nav.replay[key]  + '">' + this.nav.replay[key]  + '</li>');
+      UI.nav.append('<li class="tv-component tv-component-vertical' + (key == 2 ? '  tv-component-vertical-selected' : '') + '" data-load-view="sliders" data-load-route="tv-replay" data-keep-nav="1" data-nav="' + this.nav.replay[key]  + '">' + this.nav.replay[key]  + '</li>');
     }
     //subnav
     for (key in this.subnav.replay) {

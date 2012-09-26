@@ -399,10 +399,10 @@ UI = {
       }
       if (elmt.data('nav')) {
         args.nav = elmt.data('nav');
-        args.subnav = $('.nav .selected', UI.topbar).length > 0 ? $('.subnav .selected', UI.topbar).data('subnav') : '';
+        args.subnav = $('.nav .tv-component-vertical-selected', UI.topbar).length > 0 ? $('.subnav .tv-component-vertical-selected', UI.topbar).data('subnav') : '';
       } else if (elmt.data('subnav')) {
         args.subnav = elmt.data('subnav');
-        args.nav = $('.nav .selected', UI.topbar).length > 0 ? $('.nav .selected', UI.topbar).data('nav') : '';
+        args.nav = $('.nav .tv-component-vertical-selected', UI.topbar).length > 0 ? $('.nav .tv-component-vertical-selected', UI.topbar).data('nav') : '';
       }
       //console.warn(['UI.goEnter', 'load-route', args, elmt]);
       UI.load(elmt.data('load-route'), elmt.data('load-view'), args);
