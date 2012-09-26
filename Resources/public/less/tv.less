@@ -216,7 +216,7 @@ html {
         display: block;
       }
       li.tv-component-vertical-selected {
-        background: url("/bundles/skreenhousefactorytv/images/liang/ban_sub_menu_on.png") -5px -4px no-repeat;
+        background: url("/bundles/skreenhousefactorytv/images/liang/ban_sub_menu_on.png") -5px -4px repeat-x;
         border-radius: 3px;
         color: white;
       }
@@ -240,7 +240,7 @@ html {
       li.tv-component-vertical-selected {
         display: block;
         color: #CCC;
-        text-transform: uppercase;
+        /*text-transform: uppercase;*/
         background: none;
       }
       li:last-child {
@@ -256,7 +256,7 @@ html {
   
   #couchmode-sliders {
     width: 100%;
-    height: 280px;
+    height: 290px;
     position: absolute;
     z-index: 1;
     bottom: 0;
@@ -363,11 +363,35 @@ html {
         
         .fav {
           display: none;
+          &.btn-primary {
+            display: block;
+          }
+        }
+        .play {
+          display: none;
         }
       }
 
       .title {
         height: auto !important;
+      }
+    }
+  }
+}
+
+.modal {
+  .modal-body {
+    tr, tr:nth-child(odd) {
+      td {
+        vertical-align: middle;
+        
+        &.offer-channel {
+          background:white !important;
+          border-radius:3px;
+          width: 20%;
+          text-align: center;
+          vertical-align: middle;
+        }
       }
     }
   }

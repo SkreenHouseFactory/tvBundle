@@ -137,7 +137,7 @@ Sliders = {
     $('.onglet span', UI.topbar).html('TV & Replay');
     //nav
     for (key in this.nav.replay) {
-      UI.nav.append('<li class="tv-component tv-component-vertical' + (key == 5 ? '  tv-component-vertical-selected' : '') + '" data-load-view="sliders" data-load-route="tv-replay" data-keep-nav="1" data-nav="' + this.nav.replay[key]  + '">' + this.nav.replay[key]  + '</li>');
+      UI.nav.append('<li class="tv-component tv-component-vertical' + (key == 4 ? '  tv-component-vertical-selected' : '') + '" data-load-view="sliders" data-load-route="tv-replay" data-keep-nav="1" data-nav="' + this.nav.replay[key]  + '">' + this.nav.replay[key]  + '</li>');
     }
     //subnav
     for (key in this.subnav.replay) {

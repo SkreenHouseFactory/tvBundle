@@ -107,15 +107,19 @@ UI = {
         for (var key in args) {
           url += key + '=' + args[key] + '&';
         }
-        //UI.appendLoader($('.modal .modal-body'));
+        
+        $('.modal .modal-header').hide();
+        
         API.launchModal(url, function() {}, function() {
 
+          $('.modal .modal-header').show();
           $('.modal input').addClass('tv-component tv-component-input');
           $('.modal input[type="text"], .modal input.text').attr('autocomplete', 'off');
           setTimeout(function(){
             
+            var toFocus = $('.modal .modal-body tr.tv-component:first').length > 0 ? $('.modal .modal-body tr.tv-component:first') : $('.modal .tv-component:first');
             self.keynav($('.modal'));
-            self.focus($('.modal .tv-component:first'));
+            self.focus(toFocus);
           }, 1000);
         })
       break;

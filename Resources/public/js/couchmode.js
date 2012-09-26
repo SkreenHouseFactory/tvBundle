@@ -106,6 +106,7 @@ Couchmode = {
                      }, 
                      function(slider){
                       if ($('ul.items li', slider).length > 0) {
+                        slider.find('h2').prepend('<span class="pull-right">Plus de choix : "Flêche bas" <i class="icon-chevron-down icon-white"></i></span>')
                         self.sliders.append(slider.addClass('couchmode slide-h slide-v').data('slide-v-step', 240));
                         //console.log('Couchmode.loadSliders', 'callback', $('.slider', self.sliders).length, datas.length);
                         if (typeof callback != 'undefined' && $('.slider', self.sliders).length == nb_sliders) {
@@ -124,19 +125,28 @@ Couchmode = {
     console.log('Couchmode.loadMenu', menu, this.topbar);
     $('.onglet span', this.topbar).html(menu.onglet.replace('v3-vod', 'Vidéo à la demande')
                                                    .replace('v3-cine', 'Au cinéma')
-                                                   .replace('v3-jeunesse', 'Contenus jeunesse')
-                                                   .replace('films', 'Films en VOD')
-                                                   .replace('documentaires', 'Documentaires en VOD')
-                                                   .replace('series', 'Séries en VOD')
-                                                   .replace('spectacles', 'Théatre & spectacles en VOD')
-                                                   .replace('emissions', 'Emissions en VOD'));
+                                                   .replace('couchmode-cine', 'Au cinéma')
+                                                   .replace('v3-jeunesse', 'Vidéo à la demande')// 'Contenus jeunesse')
+                                                   .replace('films', 'Vidéo à la demande')// 'Films en VOD')
+                                                   .replace('documentaires', 'Vidéo à la demande')// 'Documentaires en VOD')
+                                                   .replace('series', 'Vidéo à la demande')// 'Séries en VOD')
+                                                   .replace('spectacles', 'Vidéo à la demande')// 'Théatre & spectacles en VOD')
+                                                   .replace('emissions', 'Vidéo à la demande')// 'Emissions en VOD')
+                                                   );
     var nav = $('.nav ul', this.topbar);
     if (menu.nav != null && menu.nav.length > 0) {
       for (key in menu.nav) {
+        var name = menu.nav[key].replace('v3-','')
+                                .replace('films', 'Films')
+                                .replace('documentaires', 'Documentaires')
+                                .replace('emissions', 'Emissions')
+                                .replace('series', 'Séries')
+                                .replace('spectacle', 'Concerts, spectacle')
+                                .replace('jeunesse', 'Jeunesse');
         if (args.onglet == 'playlist') {
-          nav.append('<li data-load-route="playlist" data-keep-nav="1" data-nav="' + menu.nav[key]  + '" class="tv-component tv-component-vertical' + (key == 0 ? ' tv-component-vertical-selected' : '') + '"><a href="#">' + menu.nav[key]  + '</a></li>');
+          nav.append('<li data-load-route="playlist" data-keep-nav="1" data-nav="' + menu.nav[key]  + '" class="tv-component tv-component-vertical' + (key == 0 ? ' tv-component-vertical-selected' : '') + '"><a href="#">' + name  + '</a></li>');
         } else {
-          nav.append('<li data-keep-nav="1" data-load-route="' + menu.nav[key]  + '" class="tv-component tv-component-vertical' + (key == 0 ? ' tv-component-vertical-selected' : '') + '"><a href="#">' + menu.nav[key].replace('v3-','')  + '</a></li>');
+          nav.append('<li data-keep-nav="1" data-load-route="' + menu.nav[key]  + '" class="tv-component tv-component-vertical' + (key == 0 ? ' tv-component-vertical-selected' : '') + '"><a href="#">' + name  + '</a></li>');
         }
       }
       $('.nav').addClass('tv-container-vertical');
