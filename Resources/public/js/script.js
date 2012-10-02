@@ -112,4 +112,20 @@ $(document).ready(function(){
     //console.warn(['script.keydown', 'key', key]);
   });
 
+
+  // html5 history
+  history.pushState({route: 'splash', 
+                      view: 'splash',
+                      args: {}}, 
+                    document.title,
+                    document.location.href);
+  window.addEventListener('popstate', function(event) {
+    console.warn('popstate', event.state);
+    if (typeof event.state != 'undefined' && event.state != null) {
+      UI.load(event.state.route, 
+              event.state.view,
+              typeof event.state.args != 'undefined' ? event.state.args : {});
+    }
+  });
+
 });

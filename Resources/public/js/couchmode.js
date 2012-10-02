@@ -78,7 +78,6 @@ Couchmode = {
     self.idle();
   },
   idle: function() {
-    return;
     //if (typeof Webview != 'undefined') {
     //  return;
     //}
@@ -114,6 +113,7 @@ Couchmode = {
                           callback();
                         }
                       } else {
+                        slider.remove();
                         nb_sliders = nb_sliders - 1;
                         console.warn('Couchmode.loadSliders', 'slider ignored : no programs', slider);
                         //self.sliders.append(slider.addClass('hide'));

@@ -62,15 +62,24 @@ UI = {
     //hack input blur
     if ($(':focus').length > 0) {
       $(':focus').blur();
-    }    
-    //if (view != 'splash') return;
+    }
 
+    var self = this;
+    
     //android
     if (typeof Webview != 'undefined') {
       Webview.postMessage(['fullscreen']);
     }
 
-    var self = this;
+    //html5 history
+    if (view != 'popin') {
+      history.replaceState({route: this.currentRoute, 
+                            view: this.currentView,
+                            args: args}, 
+                           document.title,
+                           document.location.href);
+    }
+
     this.historyRoutes.push(this.currentRoute);
     this.historyViews.push(this.currentView);
     this.currentRoute = route;
@@ -410,7 +419,11 @@ UI = {
     // browser ?
     } else if (elmt.data('open-browser')) {
       console.warn(['UI.goEnter', 'open-browser', elmt.data('open-browser')]);
-      Webview.postMessage(['browser', elmt.data('open-browser')]);
+      if (typeof Webview != 'undefined' && Webview.isActive()) {
+        Webview.postMessage(['browser', elmt.data('open-browser')]);
+      } else {
+        window.open(elmt.data('open-browser'));
+      }
 
     //slider ?
     } else if (elmt.data('play-program-id')) {

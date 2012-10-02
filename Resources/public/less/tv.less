@@ -7,26 +7,21 @@
 @focusShadow: 0px 0px 10px yellow;
 @focusShadowInset: inset 0px 0px 10px #6391DE;
 
-html.touch {
-
-}
-
 html {
-  background: transparent;
+  font-family: Helvetica, Arial;
   padding: 0;
   height: 100%;
   width: 100%;
 
   body {
-    font-family: Belleza, Helvetica;
+    background: @bgBody;
     padding: 0;
     height: 100%;
     width: 100%;
-    background: transparent;
     overflow: hidden;
     
     #splash, #sliders {
-      background: @bgBody;
+      /*background: @bgBody;*/
       -webkit-box-shadow: 0 0 100px #444, 0 0 100px #444, 0 0 100px #444;
     }
   }
@@ -64,6 +59,15 @@ html {
   box-shadow: 0 0 20px white;
 }
 
+#user {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  font-size: 1.2em;
+  color: white;
+  z-index: 5;
+}
+
 #splash {
   text-align: center;
   width: 100%;
@@ -74,12 +78,6 @@ html {
 
   > div {
     clear: both;
-  }
-
-  #user {
-    position: absolute;
-    right: 20px;
-    top: 20px;
   }
 
   #logo {

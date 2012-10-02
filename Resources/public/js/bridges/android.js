@@ -75,7 +75,7 @@ Webview = {
     }
   },
   postMessage: function(args) {
-    if (typeof App != 'undefined') {
+    if (this.isActive()) {
       //alert('Webview success');
       //console.warn(['Webview.postMessage', args[0], args[1], args[2]]);
       switch (args[0]) {
@@ -113,6 +113,14 @@ Webview = {
     } else {
       //alert('Webview fail');
       console.warn(['Webview.postMessage UNDEFINED !!', args[0], args[1], args[2]]);
+    }
+  },
+  isActive: function() {
+    return typeof App != 'undefined' ? true : false;
+  },
+  launchAndKill: function(url) {
+    if (this.isActive()) {
+      App.webOpenUrlAndLeave(url);
     }
   }
 }

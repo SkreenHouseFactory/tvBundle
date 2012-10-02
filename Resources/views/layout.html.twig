@@ -13,6 +13,7 @@
 	<meta name="language" content="fr-FR" />
 	<meta name="robots" content="noindex,nofollow">
 	<meta name="viewport" content="width=1280, user-scalable=no, initial-scale=0.8, maximum-scale=0.8/" >
+	<meta name="gtv-autozoom" content="off" />
 	<link rel="icon" href="/favicon-couchmode.ico" type="image/x-icon">
 	{% block meta %}{% endblock %}
 
@@ -42,6 +43,7 @@
 <!--[if lt IE 7]><p class=chromeframe>Votre navigateur est <em>ancien!</em> <a href="http://browsehappy.com/">Mettez-le à jour</a> ou <a href="http://www.google.com/chromeframe/?redirect=true">installez Google Chrome Frame</a> pour profiter utiliser mySkreen dans les meilleurs conditions.</p><![endif]-->
 
   <div id="error" class="alert alert-block hide"></div>
+  <div id="user" class="hide"><span class="user"></span> | <a class="tv-component signout" href="#">Déconnexion</a></div>
   {% include 'SkreenHouseFactoryV3Bundle:Main:_modal.html.twig' %}
   {% include 'SkreenHouseFactoryTvBundle:Main:_topbar.html.twig' %}
 
