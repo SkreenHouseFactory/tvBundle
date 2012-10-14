@@ -22,17 +22,11 @@
       '@SkreenHouseFactoryV3Bundle/Resources/public/less/slider.less'
       '@SkreenHouseFactoryV3Bundle/Resources/public/bootstrap/less/bootstrap.less'
       '@SkreenHouseFactoryV3Bundle/Resources/public/bootstrap/less/responsive.less'
+      '@SkreenHouseFactoryTvBundle/Resources/public/less/tv.less'
         filter='less,?yui_css'
         output='css/tv-core.css'
         %}
       <link href="{{ asset_url }}" rel="stylesheet" media="screen" />
-  {% endstylesheets %}
-  {% stylesheets
-      '@SkreenHouseFactoryTvBundle/Resources/public/less/tv.less'
-        filter='less,?yui_css'
-        output='css/tv.css'
-        %}
-      <link href="{{ asset_url }}" rel="prefetch stylesheet" media="screen" />
   {% endstylesheets %}
   {% if device['head'] is defined %}
     {% include device['head'] %}
