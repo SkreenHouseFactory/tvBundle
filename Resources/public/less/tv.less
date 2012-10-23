@@ -175,16 +175,16 @@ html {
     position: relative;
   }
   
-  .logo {
+  #logo {
     padding-top: 0px;
   }
-  .back {
+  #back {
     padding-top: 7px;
     background: url("/bundles/skreenhousefactorytv/images/liang/btn_retour_nav_off.png") no-repeat;
     width: 40px;
     height: 45px;
   }
-  .back.tv-component.tv-component-focused {
+  #back.tv-component.tv-component-focused {
     border: 0 !important;
     -webkit-box-shadow: 0 0 1px black, 0 0 1px black, 0 0 1px black;
     background: url("/bundles/skreenhousefactorytv/images/liang/btn_retour_nav_on.png") no-repeat;
@@ -344,12 +344,17 @@ html {
 
   ul.items {    
     white-space: nowrap;
+    /*-webkit-perspective: 550px;*/
 
     li {
       border: 1px solid #555;
       width: 150px !important;
       background-position: center;
       background-color: black;
+
+      /*-webkit-transform: rotateY(150deg);
+      zoom: 0.9;
+      margin-top: 10px;*/
 
       .actions {
         white-space: normal;
@@ -363,6 +368,11 @@ html {
     }
 
     li.tv-component-focused, ul.items li:hover {
+
+      /*-webkit-transform: rotateY(0deg);
+      zoom: 1;
+      margin-top: 0px;*/
+
       .actions {
         display: block;
         

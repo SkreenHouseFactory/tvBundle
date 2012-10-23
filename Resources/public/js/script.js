@@ -78,6 +78,12 @@ $(document).ready(function(){
   //keynav
   $(document).keydown(function(e) {
 
+    //block navigation ?
+    if ($('[data-block-navigation="true"]').length > 0) {
+      console.warn('script.keydown', 'block-navigation:', $('[data-block-navigation="true"]'));
+      return false;
+    }
+
     var key = e.keyCode;
 		switch(key) {
 			case 37:

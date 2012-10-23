@@ -72,6 +72,7 @@
 	  kn.el.push(e);
   }
   $.keynav.setActive = function(e, fromKeyb) {
+    
     if (typeof e == 'undefined') {
       console.warn(['setActive undefined']);
       return false;
@@ -90,7 +91,7 @@
 
     //treatements
     if (e != cur) {
-      //console.warn(['keynav.setActive1', e.onClass]);
+      console.warn('keynav.setActive1', e, cur);
       $(cur).removeClass(e.onClass).addClass(e.offClass);
 
       //last focused
@@ -129,7 +130,8 @@
 	  else {
 		  var cur = kn.el[0];
 	  }
-    //console.warn(['keynav', 'lastFocused', cur.className]);
+    console.warn('keynav.getCurrent', cur);
+
 	  return cur;
   }
   $.keynav.quad = function(cur,fQuad) {    
@@ -137,13 +139,14 @@
 	  var quad = Array();
 	  for(i=0;i<kn.el.length;i++) {
 		var el = kn.el[i];
-		if(cur == el) continue;
+		if(cur == el || typeof cur.pos == 'undefined') continue;
 		if(fQuad((cur.pos.cx - el.pos.cx),(cur.pos.cy - el.pos.cy)))
 		  quad.push(el);
 	  }
 	  return quad;
   }
   $.keynav.activateClosest = function(cur,quad,direction) {
+
 	  var closest;
 	  var od = 1000000;
 	  var nd = 0;

@@ -160,6 +160,9 @@ UI = {
   unloadView: function(route, view, args, callback) {
     //console.log(['UI.unloadView', route, view, 'keep_nav :' + args.keep_nav, 'modal hidden :' + $('.modal').hasClass('hide')]);
 
+    //keynav
+    $.keynav.reset();
+
     //modal
     if ($('.modal').hasClass('in') == true) {
       $('.modal').modal('hide');
@@ -251,7 +254,6 @@ UI = {
   },
   keynav: function(elmt) {
     //console.warn(['UI.keynav']);
-    $.keynav.reset();
     var components = typeof elmt == 'undefined' ? $('.tv-component:visible, #topbar .tv-component-vertical') : $('.tv-component:visible', elmt);
     components.keynav('tv-component-focused', 'tv-component-unfocused', 'tv-component-vertical');
   },
@@ -273,19 +275,23 @@ UI = {
     $('.slider', slider.parent()).removeClass('down up current');
     if (direction == 'down' && slider.next('.slider.slide-v').length > 0) {
       //slider.parent().css({top: '-=240'});
+      slider.parent().attr('data-block-navigation', true);
       slider.parent().animate({top: '-=240'}, 400, 'linear', function(){
         slider.addClass('down');
         var current = slider.prev('.slider.slide-v');
         current.addClass('current');
         current.prev('.slider.slide-v').addClass('up');
+        slider.parent().attr('data-block-navigation', false);
       });
     } else if (direction == 'up' && parseInt(slider.parent().css('top')) < 0) {
       //slider.parent().css({top: '+=240'});
+      slider.parent().attr('data-block-navigation', true);
       slider.parent().animate({top: '+=240'}, 400, 'linear',function() {
         slider.addClass('up');
         var current = slider.next('.slider.slide-v');
         current.addClass('current');
         current.next('.slider.slide-v').addClass('down');
+        slider.parent().attr('data-block-navigation', false);
       });
     }
   },
