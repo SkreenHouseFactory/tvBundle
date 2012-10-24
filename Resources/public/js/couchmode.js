@@ -104,7 +104,7 @@ Couchmode = {
                       url: datas[key].url
                      }, 
                      function(slider){
-                      if ($('ul.items li', slider).length > 0) {
+                      if ($('ul.items li:not(.loader)', slider).length > 0) {
                         slider.find('h2').prepend('<span class="pull-right">Plus de choix : "Flèche bas" <i class="icon-chevron-down icon-white"></i></span>')
                         self.sliders.append(slider.addClass('couchmode slide-h slide-v').data('slide-v-step', 240));
                         //console.log('Couchmode.loadSliders', 'callback', $('.slider', self.sliders).length, datas.length);
