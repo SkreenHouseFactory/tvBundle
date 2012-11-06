@@ -1,0 +1,64 @@
+.no-touch {
+  #couchmode {
+    #couchmode-sliders {
+      .container {
+        overflow-y: auto;
+        height: 300px;
+      }
+    }
+  }
+
+}
+
+#couchmode {
+  display: none;
+  
+  #couchmode-sliders {
+    width: 100%;
+    height: 290px;
+    position: absolute;
+    z-index: 1;
+    bottom: 0;
+    overflow-y: hidden;
+
+    .cache {
+      background: black;
+      height: 100%;
+      width: 100%;
+      opacity: 0.5;
+      position: absolute;
+      z-index: 2;
+    }
+    
+    .container {
+      position: absolute;
+      z-index: 3;
+      width: 100%;
+
+      .slider {
+        height: 240px;
+
+        h2 {
+          color: white;
+        }
+
+        &.current, &.down {
+         display: block;
+        }
+
+        &.down, &.up {
+          ul {
+            margin-top: 10px;
+            opacity: 0.4;
+          }
+        }
+      }
+    }
+  }
+  
+  #couchmode-player {
+    width: 100%;
+    height: 100%;
+
+  }
+}

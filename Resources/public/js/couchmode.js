@@ -10,10 +10,15 @@ Couchmode = {
   init: function(args) {
     console.log('Couchmode.start', args);
     var self = this;
+    this.on();
     this.elmt = $('#couchmode');
     this.sliders = $('#couchmode-sliders .container', this.elmt).empty();
     Player.init($('#couchmode-player', this.elmt));
     UI.appendLoader(Player.elmt, 1000);
+    $('.couchmode-close').click(function(e){
+      e.preventDefault();
+      self.unload();
+    });
     self.elmt.show();
 
     self.active_slider == null
@@ -24,17 +29,15 @@ Couchmode = {
     if (args.onglet == 'show') {
       this.elmt.show();
     } else {
+      var params = $.extend({
+                             img_width: 150,
+                             img_height: 200,
+                             limit: 3
+                            },
+                            args);
       API.query('GET',
                 'couchmode.json',
-                {
-                  onglet: args.onglet, 
-                  session_uid:args.session_uid, 
-                  program_id: args.program_id,
-                  nav: args.nav,
-                  img_width: 150,
-                  img_height: 200,
-                  limit: 3
-                },
+                params,
                 function(json){
                   self.start(json, args);
                 }, 
@@ -51,6 +54,18 @@ Couchmode = {
       });
       this.initialized = true;
     }
+  },
+  on: function() {
+    
+    $('.couchmode-on').show().animate({opacity: 1}, 500, function(){
+      $('.couchmode-off').hide();
+    });
+  },
+  off: function() {
+    $('.couchmode-on').animate({opacity: 0}, 500, function(){
+      $(this).hide();
+      $('.couchmode-off').show();
+    });
   },
   start: function(datas, args) {
     console.log('Couchmode.init', datas);
@@ -85,10 +100,10 @@ Couchmode = {
     //console.log('Couchmode.idle');
     if (this.elmt != null && 
         this.elmt.css('display') == 'block') {
-      $('.overlay').show();
+      $('.overlay, .couchmode-overlay').show();
       window.clearTimeout(this.timeout);
       this.timeout = setTimeout(function(){
-        $('.overlay').fadeOut('slow');
+        $('.overlay, .couchmode-overlay').fadeOut('slow');
       }, this.timeoutdelay);
     }
   },
@@ -105,18 +120,19 @@ Couchmode = {
                      }, 
                      function(slider){
                       if ($('ul.items li:not(.loader)', slider).length > 0) {
-                        slider.find('h2').prepend('<span class="pull-right">Plus de choix : "Flèche bas" <i class="icon-chevron-down icon-white"></i></span>')
+                        slider.find('h2')
+                              .prepend('<span class="pull-right">Plus de choix : "Flèche bas" <i class="icon-chevron-down icon-white"></i></span>')
                         self.sliders.append(slider.addClass('couchmode slide-h slide-v').data('slide-v-step', 240));
                         //console.log('Couchmode.loadSliders', 'callback', $('.slider', self.sliders).length, datas.length);
-                        if (typeof callback != 'undefined' && $('.slider', self.sliders).length == nb_sliders) {
-                          //console.log('Couchmode.loadSliders', 'callback', key);
-                          callback();
-                        }
                       } else {
                         slider.remove();
                         nb_sliders = nb_sliders - 1;
                         console.warn('Couchmode.loadSliders', 'slider ignored : no programs', slider);
                         //self.sliders.append(slider.addClass('hide'));
+                      }
+                      if (typeof callback != 'undefined' && $('.slider', self.sliders).length == nb_sliders) {
+                        //console.log('Couchmode.loadSliders', 'callback', key);
+                        callback();
                       }
                      });
     }
@@ -200,6 +216,8 @@ Couchmode = {
 
     var li = typeof li != 'undefined' ? li : $('li:not(.static):first', this.active_slider);
 
+    console.log('Couchmode.play', li, Player.elmt);
+
     if (parseInt(li.data('play-program-id')) > 0) {
       UI.focus(li);
       var play = Player.playProgram(li.data('play-program-id'), function(){
@@ -221,5 +239,6 @@ Couchmode = {
       this.sliders.css('top', '0px');
       this.sliders.empty();
     }
+    this.off();
   }
 }
