@@ -15,10 +15,7 @@ Couchmode = {
     this.sliders = $('#couchmode-sliders .container', this.elmt).empty();
     Player.init($('#couchmode-player', this.elmt));
     UI.appendLoader(Player.elmt, 1000);
-    $('.couchmode-close').click(function(e){
-      e.preventDefault();
-      self.unload();
-    });
+    
     self.elmt.show();
 
     self.active_slider == null
@@ -55,11 +52,33 @@ Couchmode = {
       this.initialized = true;
     }
   },
-  on: function() {
-    
-    $('.couchmode-on').show().animate({opacity: 1}, 500, function(){
-      $('.couchmode-off').hide();
+  prepare: function() {
+    console.log('Couchmode.prepare', 'li:'+$('[data-play-program-id]', this.elmt).length);
+    var self = this;
+    $('.couchmode-close').unbind().bind('click', function(e){
+      e.preventDefault();
+      self.unload();
     });
+    $('[data-play-program-id]', this.elmt).unbind().bind('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var elmt = $(this);
+      console.warn('Couchmode.init' , 'play-program-id:' + elmt.data('play-program-id'));
+      if (elmt.parents('.slider.couchmode').length == 0 || 
+          Player.elmt.data('playing-id') == elmt.data('play-program-id')) {
+        if (Player.state == 'playing') {
+          Player.pause();
+        }
+        //self.infos(elmt.data('play-program-id'));
+      } else {
+        self.play(elmt);
+      }
+      return false;
+    });
+  },
+  on: function() {
+    $('.couchmode-off').hide();
+    $('.couchmode-on').show().animate({opacity: 1}, 500);
   },
   off: function() {
     $('.couchmode-on').animate({opacity: 0}, 500, function(){
@@ -93,10 +112,6 @@ Couchmode = {
     self.idle();
   },
   idle: function() {
-    //if (typeof Webview != 'undefined') {
-    //  return;
-    //}
-    
     //console.log('Couchmode.idle');
     if (this.elmt != null && 
         this.elmt.css('display') == 'block') {
@@ -131,7 +146,8 @@ Couchmode = {
                         //self.sliders.append(slider.addClass('hide'));
                       }
                       if (typeof callback != 'undefined' && $('.slider', self.sliders).length == nb_sliders) {
-                        //console.log('Couchmode.loadSliders', 'callback', key);
+                        console.log('Couchmode.loadSliders', 'callback', key);
+                        self.prepare();
                         callback();
                       }
                      });
@@ -213,23 +229,48 @@ Couchmode = {
       Player.elmt = $('#couchmode-player');
     }
     UI.removeLoader(Player.elmt);
+    this.elmt.removeClass('unvailable');
 
     var li = typeof li != 'undefined' ? li : $('li:not(.static):first', this.active_slider);
-
-    console.log('Couchmode.play', li, Player.elmt);
+    console.log('Couchmode.play', li, 'player-program:'+li.data('player-program'));
 
     if (parseInt(li.data('play-program-id')) > 0) {
       UI.focus(li);
-      var play = Player.playProgram(li.data('play-program-id'), function(){
-        self.next();
+      Player.loadMetaProgram(JSON.parse(li.data('player-program')));
+      var play = Player.playProgram(li.data('play-program-id'), function(error){
+        if (error) {
+          Couchmode.error(error);
+        } else {
+          self.next();
+        }
       });
-      if (play == false) { // pas de vidéo : on lance la popin
-        li.click();
-      }
+
+      //console.log('Couchmode.play', 'play', play);
+      //if (play == false) { // pas de vidéo : on lance la popin
+      //  li.click();
+      //}
       // TODO : Player.loadMetaProgram({title: li.find('.title').text(), format:'', year:''});
     } else {
       console.warn(['Couchmode.play', 'error player', li.data('id')]);
     }
+  },
+  error: function(msg) {
+    switch(msg) {
+      case 'unvailable':
+        this.elmt.addClass('unvailable');
+      break;
+      default:
+        $('#couchmode-error').html(msg).fadeIn();
+        setTimeout(function() {
+                     $('#couchmode-error').hide().empty();
+                   }, 3000);
+      break;
+    }
+
+    $('#couchmode-error').html(msg).fadeIn();
+    setTimeout(function() {
+                 $('#couchmode-error').hide().empty();
+               }, 3000);
   },
   unload: function() {
     console.log('Couchmode.unload');
@@ -239,6 +280,7 @@ Couchmode = {
       this.sliders.css('top', '0px');
       this.sliders.empty();
     }
+    Player.stop();
     this.off();
   }
 }

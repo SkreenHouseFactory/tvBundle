@@ -4,6 +4,24 @@
       .container {
         overflow-y: auto;
         height: 300px;
+
+        .slider {
+          height: 270px;
+          overflow-y: hidden;
+
+          h2 {
+            font-size: 1.3em;
+            font-weight: normal;
+            padding-left: 10px;
+            margin-bottom: 0;
+          }
+          
+          &.down, &.up {
+            ul {
+              opacity: 1;
+            }
+          }
+        }
       }
     }
   }
@@ -13,6 +31,14 @@
 #couchmode {
   display: none;
   
+  &.unvailable {
+    background: black url("/bundles/skreenhousefactorytv/images/unvailable.png") center no-repeat;
+  }
+
+  #couchmode-error {
+    display: none;
+  }
+
   #couchmode-sliders {
     width: 100%;
     height: 290px;
@@ -60,5 +86,8 @@
     width: 100%;
     height: 100%;
 
+    .progress {
+      margin: 20% 30%;
+    }
   }
 }
