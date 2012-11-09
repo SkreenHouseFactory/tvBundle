@@ -1,20 +1,17 @@
-// -- init
-console.log('API.init');
-API.init(function(){
-  // -- console
-  if( API.config.env != 'dev' ) {
-    console = {
-        log: function() {},
-        warn: function() {},
-        error: function() {}
-    };
-
-    console.log('API.init', 'callback');
-  }
-});
-
 // -- ready
 $(document).ready(function(){
+
+  // -- init
+  API.init(function(){
+    console.log('API.init', 'callback');
+    
+    // -- session
+    Skhf.session = new BaseSession(function(){
+      console.log('script', 'session', API.context);
+      UI.loadView('splash', 'splash');
+      //UI.loadUserPrograms();
+    });
+  });
 
 	UI.init();
 
@@ -27,24 +24,12 @@ $(document).ready(function(){
     });
   }
 
-
-  // -- debut script
-  Skhf = {
-    session: null
-  }
-
-  // -- session
-  //$('.user-on').hide();
-  Skhf.session = new BaseSession(function(){
-    console.log('script', 'context', API.context);
-    UI.loadView('splash', 'splash');
-    //UI.loadUserPrograms();
-  });
-
   // -- signout
   $('a.signout').live('click', function(){
     Skhf.session.signout(function() {
-      UI.loadUser();
+      Skhf.session.sync(function(){
+        UI.loadUser();
+      });
     });
     return false;
   });
@@ -67,6 +52,12 @@ $(document).ready(function(){
     UI.focus($('.tv-component-last-focused')); //$('div:not(#toppbar, .modal) .tv-component:first'));
     if (Player.state == 'paused') {
       Player.resume();
+    }
+    //callback ?
+    if (UI.callbackModal != null) {
+      console.log("script", "UI.callbackModal");
+      UI.callbackModal();
+      UI.callbackModal = null;
     }
   });
   $('.modal .close').live('click', function(e){

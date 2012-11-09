@@ -7,6 +7,7 @@ UI = {
   currentView: 'splash',
   historyRoutes: [],
   historyViews: [],
+  callbackModal: null,
   touch: false,
   dpad: false,
   badge_notification: '<span class="badge badge-important">%count%</span>',
@@ -124,12 +125,7 @@ UI = {
           $('.modal .modal-header').show();
           $('.modal input').addClass('tv-component tv-component-input');
           $('.modal input[type="text"], .modal input.text').attr('autocomplete', 'off');
-          setTimeout(function(){
-            
-            var toFocus = $('.modal .modal-body tr.tv-component:first').length > 0 ? $('.modal .modal-body tr.tv-component:first') : $('.modal .tv-component:first');
-            self.keynav($('.modal'));
-            self.focus(toFocus);
-          }, 1000);
+          self.keynavModal();
         })
       break;
       case 'sliders':
@@ -140,14 +136,21 @@ UI = {
       default:
         $('#splash, #sliders').hide();
         self.topbar.show();
-        if (route == 'playlist' && !Skhf.session.datas.email) {
+        if (route == 'playlist' && !Skhf.session.user) {
           this.load('splash', 'splash');
-          API.quickLaunchModal('signin', function() {
-            self.loadUser();
-            if (Skhf.session.datas.email) {
-              self.loadView(route, view, $.extend(args, {nofocus: true}));
-            }
-          });
+          UI.callbackModal = function() {
+                                Skhf.session.sync(function(){
+                                  console.log('UI.load', 'callback playlist', Skhf.session);
+                                  self.loadUser();
+                                  if (Skhf.session.user) {
+                                    self.loadView(route, view, $.extend(args, {nofocus: true}));
+                                  }
+                                });
+                               }
+          API.quickLaunchModal('signin',
+                               function(){
+                                self.keynavModal();
+                               });
           return false;
         }
         Couchmode.init({onglet: route, 
@@ -181,7 +184,7 @@ UI = {
     }
 
     //player
-    if (Player.state == 'playing') {
+    if (Player.state != 'stopped') {
       console.warn(['UI.unloadView', 'Player.stop()']);
       Player.stop();
     }
@@ -200,13 +203,14 @@ UI = {
     }
   },
   loadUser: function() {
-    if (Skhf.session.datas.email) {
-      $('.user', this.userblock).html(Skhf.session.datas.email);
+    console.log('UI.loadUser', Skhf.session.user);
+    if (Skhf.session.user) {
+      $('.user', this.userblock).html(Skhf.session.user);
       this.userblock.show();
       //TO FINISH :
-      if (typeof Skhf.session.datas.notifications['programs'] != 'undefined') {
-        $('.notifications').addClass('with-badge').append($(this.badge_notification).html(Skhf.session.datas.notifications['programs']['new'].length));
-      }
+      //if (typeof Skhf.session.datas.notifications['programs'] != 'undefined') {
+      //  $('.notifications').addClass('with-badge').append($(this.badge_notification).html(Skhf.session.datas.notifications['programs']['new'].length));
+      //}
     } else {
       $('.user', this.userblock).empty();
       this.userblock.hide();
@@ -234,8 +238,8 @@ UI = {
   togglePlaylistProgram: function(trigger){
     var value = trigger.parent().data('load-player');
     var remove = trigger.hasClass('btn-primary') || trigger.hasClass('btn-danger') ? true : false;
-    if (Skhf.session.datas.email) {
-      API.togglePreference('like', value, trigger, function(value){
+    if (Skhf.session.user) {
+      API.togglePreference('like', value, function(value){
         //console.log('UI.togglePlaylistProgram', 'callback', value, trigger, 'remove:'+remove);
         if (remove) { //pas pour le slider social
           trigger.removeClass('btn-primary').html('<i class="icon-add-sign"></i> Suivre / voir plus tard');
@@ -253,9 +257,19 @@ UI = {
     this.load(this.historyRoutes.slice(0,1));
   },
   keynav: function(elmt) {
-    //console.warn(['UI.keynav']);
-    var components = typeof elmt == 'undefined' ? $('.tv-component:visible, #topbar .tv-component-vertical') : $('.tv-component:visible', elmt);
+    var components = typeof elmt == 'undefined' ? $('.tv-component:visible, #topbar .tv-component-vertical') : $('.tv-component:visible, .tv-component-force', elmt);
     components.keynav('tv-component-focused', 'tv-component-unfocused', 'tv-component-vertical');
+    console.warn('UI.keynav', components);
+  },
+  keynavModal: function() {
+    var self = this;
+    console.warn('UI.keynavModal');
+    $.keynav.reset();
+    setTimeout(function(){
+      var toFocus = $('.modal .modal-body tr.tv-component:first').length > 0 ? $('.modal .modal-body tr.tv-component:first') : $('.modal .tv-component:first');
+      self.keynav($('.modal'));
+      self.focus(toFocus);
+    }, 1000);
   },
   focus: function(elmt) {
     //console.warn(['UI.focus', elmt.attr('class')]);

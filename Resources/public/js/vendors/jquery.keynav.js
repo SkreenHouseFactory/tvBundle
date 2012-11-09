@@ -120,7 +120,7 @@ $.keynav.setActive = function(e, fromKeyb) {
   }
 
   kn.currentEl = e;
-  //console.warn(['keynav', 'focused', $(kn.currentEl).html()]);
+  console.warn(['keynav', 'focused', $(kn.currentEl)]);
 }
 $.keynav.getCurrent = function () {
   var kn = $.keynav;
@@ -141,7 +141,9 @@ $.keynav.quad = function(cur,fQuad) {
 	var el = kn.el[i];
 	if(cur == el || typeof cur.pos == 'undefined') continue;
 	if(fQuad((cur.pos.cx - el.pos.cx),(cur.pos.cy - el.pos.cy)))
-	  quad.push(el);
+	  if ($(el).is(':visible')) { //on ne prend pas si caché momentanément
+	   quad.push(el);
+	  }
   }
   return quad;
 }
