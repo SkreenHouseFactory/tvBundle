@@ -257,7 +257,7 @@ UI = {
     this.load(this.historyRoutes.slice(0,1));
   },
   keynav: function(elmt) {
-    var components = typeof elmt == 'undefined' ? $('.tv-component:visible, #topbar .tv-component-vertical') : $('.tv-component:visible, .tv-component-force', elmt);
+    var components = typeof elmt == 'undefined' ? $('.tv-component:visible, .tv-component-force, #topbar .tv-component-vertical') : $('.tv-component:visible, .tv-component-force', elmt);
     components.keynav('tv-component-focused', 'tv-component-unfocused', 'tv-component-vertical');
     console.warn('UI.keynav', components);
   },
