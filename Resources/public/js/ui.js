@@ -120,7 +120,7 @@ UI = {
         
         $('.modal .modal-header').hide();
         
-        API.launchModal(url, function() {}, function() {
+        API.launchModal(url, function() {
 
           $('.modal .modal-header').show();
           $('.modal input').addClass('tv-component tv-component-input');
@@ -249,7 +249,7 @@ UI = {
       });
     } else {
       API.quickLaunchModal('signin', function(){
-        Skhf.session.sync();
+          self.keynavModal();
       });
     }
   },

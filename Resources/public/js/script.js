@@ -29,6 +29,8 @@ $(document).ready(function(){
     Skhf.session.signout(function() {
       Skhf.session.sync(function(){
         UI.loadUser();
+        UI.loadView('splash', 'splash');
+        setTimeout(function(){ UI.keynav(); }, 1000);
       });
     });
     return false;

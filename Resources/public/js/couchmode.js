@@ -10,7 +10,6 @@ Couchmode = {
   init: function(args) {
     console.log('Couchmode.start', args);
     var self = this;
-    this.on();
     this.elmt = $('#couchmode');
     this.sliders = $('#couchmode-sliders .container', this.elmt).empty();
     Player.init($('#couchmode-player', this.elmt));
@@ -55,6 +54,7 @@ Couchmode = {
   prepare: function() {
     console.log('Couchmode.prepare', 'li:'+$('[data-play-program-id]', this.elmt).length);
     var self = this;
+    this.on();
     $('.couchmode-close').unbind().bind('click', function(e){
       e.preventDefault();
       self.unload();
@@ -115,7 +115,7 @@ Couchmode = {
     //console.log('Couchmode.idle');
     if (this.elmt != null && 
         this.elmt.css('display') == 'block') {
-      $('.overlay, .couchmode-overlay').show();
+      $('.couchmode-overlay:not(#user)').show();
       window.clearTimeout(this.timeout);
       this.timeout = setTimeout(function(){
         $('.overlay, .couchmode-overlay').fadeOut('slow');
@@ -236,14 +236,19 @@ Couchmode = {
 
     if (parseInt(li.data('play-program-id')) > 0) {
       UI.focus(li);
-      Player.loadMetaProgram(JSON.parse(li.data('player-program')));
-      var play = Player.playProgram(li.data('play-program-id'), function(error){
-        if (error) {
-          Couchmode.error(error);
-        } else {
-          self.next();
-        }
-      });
+
+      Player.loadMetaProgram(li.data('player-program'));
+      var play = Player.playProgram(li.data('play-program-id'), 
+                                    function(error){
+                                      if (error) {
+                                        Couchmode.error(error);
+                                      } else {
+                                        self.next();
+                                      }
+                                    },
+                                    {
+                                      fromWebsite: 'couchmode'
+                                    });
 
       //console.log('Couchmode.play', 'play', play);
       //if (play == false) { // pas de vidéo : on lance la popin
