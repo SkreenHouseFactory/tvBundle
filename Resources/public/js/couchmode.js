@@ -8,16 +8,17 @@ Couchmode = {
   timeoutdelay: 6000,
   initialized: false,
   init: function(args) {
-    console.log('Couchmode.start', args);
+    console.log('Couchmode.init', args);
     var self = this;
     this.elmt = $('#couchmode');
     this.sliders = $('#couchmode-sliders .container', this.elmt).empty();
     Player.init($('#couchmode-player', this.elmt));
     UI.appendLoader(Player.elmt, 1000);
     
-    self.elmt.show();
+    this.elmt.show();
+    this.on();
 
-    self.active_slider == null
+    this.active_slider == null
     if (this.timeout == null) {
       this.idleStart();
     }
@@ -28,6 +29,7 @@ Couchmode = {
       var params = $.extend({
                              img_width: 150,
                              img_height: 200,
+                             with_pass: 1,
                              limit: 3
                             },
                             args);
@@ -87,7 +89,7 @@ Couchmode = {
     });
   },
   start: function(datas, args) {
-    console.log('Couchmode.init', datas);
+    console.log('Couchmode.start', datas);
     var self = this;
     //reset
     this.sliders.empty();
@@ -95,13 +97,16 @@ Couchmode = {
     //load
     this.loadMenu(datas.menu, args);
     this.loadSliders(datas.sliders, function(){
-      console.log('Couchmode.init', 'callback', $('.slider', self.sliders));
+      console.log('Couchmode.start', 'callback', $('.slider', self.sliders), 'autoplay', datas.autoplay);
       UI.keynav();
       if (self.active_slider == null) {
         self.active_slider = $('.slider:first', self.sliders);
         self.active_slider.addClass('current');
         $('.slider:not(.current)', self.sliders).addClass('down');
-        self.play();
+        var autoplay = $('[data-id="' + datas.autoplay + '"]');
+        self.play(autoplay.length > 0 ? autoplay : null, 
+                  typeof datas.occurrence_id != 'undefined' ? datas.occurrence_id : null);
+
       } else {
         //slider.addClass('down');
       }
@@ -223,40 +228,66 @@ Couchmode = {
       UI.error('Plus de programmes !');
     }
   },
-  play: function(li) {
+  play: function(li, occurrence_id) {
     var self = this;
+    console.log('Couchmode.play', li, 'occurrence_id', occurrence_id);
     if (typeof Player.elmt == 'undefined') {
       Player.elmt = $('#couchmode-player');
     }
     UI.removeLoader(Player.elmt);
     this.elmt.removeClass('unvailable');
 
-    var li = typeof li != 'undefined' ? li : $('li:not(.static):first', this.active_slider);
-    console.log('Couchmode.play', li, 'player-program:'+li.data('player-program'));
+    var li = typeof li != 'undefined' && li ? li : $('li:not(.static):first', this.active_slider);
+    //console.log('Couchmode.play', 'player-program', li.data('player-program'), li);
 
-    if (parseInt(li.data('play-program-id')) > 0) {
+    var player_datas = li.data('player-program');
+    if (player_datas.id) {
       UI.focus(li);
+      $('li.tv-component-focused', this.sliders).removeClass('tv-component-focused');
+      li.addClass('tv-component-focused');
 
-      Player.loadMetaProgram(li.data('player-program'));
-      var play = Player.playProgram(li.data('play-program-id'), 
-                                    function(error){
-                                      if (error) {
-                                        Couchmode.error(error);
-                                      } else {
-                                        self.next();
-                                      }
-                                    },
-                                    {
-                                      fromWebsite: 'couchmode'
-                                    });
+      //onErrorCallback
+      var onErrorCallback = function(error){
+        if (error) {
+          Couchmode.error(error);
+        } else {
+          self.next();
+        }
+      }
 
+      Player.loadMetaProgram(player_datas);
+      //YouTube
+      if (isNaN(player_datas.id)) {
+        Player.play({
+                      format: player_datas.format, 
+                      url: player_datas.id
+                    },
+                    onErrorCallback);
+      //Player mySkreen
+      } else {
+        if (typeof occurrence_id != 'undefined' && occurrence_id != null) {
+          Player.playOccurrence(occurrence_id, 
+                              onErrorCallback,
+                              {
+                                fromWebsite: 'couchmode',
+                                control: 'disabled'
+                              });
+        } else {
+          Player.playProgram(player_datas.id, 
+                              onErrorCallback,
+                              {
+                                fromWebsite: 'couchmode',
+                                control: 'disabled'
+                              });
+        }
+      }
       //console.log('Couchmode.play', 'play', play);
       //if (play == false) { // pas de vidéo : on lance la popin
       //  li.click();
       //}
       // TODO : Player.loadMetaProgram({title: li.find('.title').text(), format:'', year:''});
     } else {
-      console.warn(['Couchmode.play', 'error player', li.data('id')]);
+      console.warn(['Couchmode.play', 'error player', li.data('id'), player_datas]);
     }
   },
   error: function(msg) {
