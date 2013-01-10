@@ -2,6 +2,7 @@
 var Couchmode;
 Couchmode = {
   elmt: null,
+  params: null,
   sliders: null,
   active_slider: null,
   timeout: null,
@@ -10,6 +11,10 @@ Couchmode = {
   init: function(args) {
     console.log('Couchmode.init', args);
     var self = this;
+    this.params = {
+      autoplay: typeof args.autoplay != 'undefined' ? args.autoplay : false, 
+      hide_sliders:  typeof args.hide_sliders != 'undefined' ? args.hide_sliders : false
+    };
     this.elmt = $('#couchmode');
     this.sliders = $('#couchmode-sliders .container', this.elmt).empty();
     Player.init($('#couchmode-player', this.elmt));
@@ -79,6 +84,10 @@ Couchmode = {
     });
   },
   on: function() {
+    console.log('Couchmode.on', this.params);
+    if (this.params.hide_sliders) {
+      $('#couchmode-sliders', this.elmt).hide().removeClass('couchmode-overlay');
+    }
     $('.couchmode-off').hide();
     $('.couchmode-on').show().animate({opacity: 1}, 500);
   },
@@ -265,20 +274,18 @@ Couchmode = {
                     onErrorCallback);
       //Player mySkreen
       } else {
+        var args = {fromWebsite: 'couchmode'}
+        if (!this.params.hide_sliders) {
+          args.control = 'disabled';
+        }
         if (typeof occurrence_id != 'undefined' && occurrence_id != null) {
           Player.playOccurrence(occurrence_id, 
                               onErrorCallback,
-                              {
-                                fromWebsite: 'couchmode',
-                                control: 'disabled'
-                              });
+                              args);
         } else {
           Player.playProgram(player_datas.id, 
                               onErrorCallback,
-                              {
-                                fromWebsite: 'couchmode',
-                                control: 'disabled'
-                              });
+                              args);
         }
       }
       //console.log('Couchmode.play', 'play', play);
