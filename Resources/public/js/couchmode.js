@@ -88,10 +88,11 @@ Couchmode = {
     if (this.params.hide_sliders) {
       $('#couchmode-sliders', this.elmt).hide().removeClass('couchmode-overlay');
     }
-    $('.couchmode-off').hide();
+    $('.couchmode-off:not(.couchmode-overlay)').hide();
     $('.couchmode-on').show().animate({opacity: 1}, 500);
   },
   off: function() {
+    window.clearTimeout(this.timeout);
     $('.couchmode-on').animate({opacity: 0}, 500, function(){
       $(this).hide();
       $('.couchmode-off').show();
@@ -317,13 +318,12 @@ Couchmode = {
   },
   unload: function() {
     console.log('Couchmode.unload');
-    clearTimeout(this.timeout);
+    this.off();
+    Player.stop();
     this.active_slider = null;
     if (this.sliders) {
       this.sliders.css('top', '0px');
       this.sliders.empty();
     }
-    Player.stop();
-    this.off();
   }
 }
