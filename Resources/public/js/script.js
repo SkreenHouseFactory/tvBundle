@@ -112,6 +112,8 @@ $(document).ready(function(){
   });
 
 
+  UI.keynav($('#splash'));
+
   // html5 history
   history.pushState({route: 'splash', 
                       view: 'splash',

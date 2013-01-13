@@ -19,7 +19,7 @@ Couchmode = {
     this.sliders = $('#couchmode-sliders .container', this.elmt).empty();
     Player.init($('#couchmode-player', this.elmt));
     UI.appendLoader(Player.elmt, 1000);
-    
+
     this.elmt.show();
     this.on();
 
