@@ -17,7 +17,7 @@ Couchmode = {
     };
     this.elmt = $('#couchmode');
     this.sliders = $('#couchmode-sliders .container', this.elmt).empty();
-    Player.init($('#couchmode-player', this.elmt));
+    Player.init($('#couchmode-player', this.elmt), $('#couchmode-player-meta', this.elmt));
     UI.appendLoader(Player.elmt, 1000);
 
     this.elmt.show();
@@ -240,7 +240,7 @@ Couchmode = {
   },
   play: function(li, occurrence_id) {
     var self = this;
-    console.log('Couchmode.play', li, 'occurrence_id', occurrence_id);
+    console.log('Couchmode.play', 'occurrence_id:', occurrence_id, 'params:', this.params);
     if (typeof Player.elmt == 'undefined') {
       Player.elmt = $('#couchmode-player');
     }
