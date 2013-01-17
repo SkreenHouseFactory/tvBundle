@@ -251,7 +251,9 @@ Couchmode = {
     //console.log('Couchmode.play', 'player-program', li.data('player-program'), li);
 
     var player_datas = li.data('player-program');
-    if (player_datas.id) {
+    if (typeof player_datas == 'undefined') {
+      return this.error('player_datas undefined');
+    } else if (player_datas.id) {
       UI.focus(li);
       $('li.tv-component-focused', this.sliders).removeClass('tv-component-focused');
       li.addClass('tv-component-focused');
@@ -259,7 +261,7 @@ Couchmode = {
       //onErrorCallback
       var onErrorCallback = function(error){
         if (error) {
-          Couchmode.error(error);
+          this.error(error);
         } else {
           self.next();
         }
