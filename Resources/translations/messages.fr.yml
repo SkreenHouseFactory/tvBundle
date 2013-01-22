@@ -1,7 +1,7 @@
 service:
-    name: mySkreen
-    description: 'mySkreen description'
-    url: 'http://www.myskreen.com'
+    name: mySkreen.com
+    description: mySkreen
+    url: http://www.myskreen.com
 page:
     title:
         home: Couchmode
