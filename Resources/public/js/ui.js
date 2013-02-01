@@ -235,7 +235,8 @@ UI = {
                                                                       .removeClass('btn-primary');
     }
   },
-  togglePlaylistProgram: function(trigger){
+  loadPlaylistTriggers: function(parameter, ids, elmt){
+		return; //TODO: UPDATE
     var value = trigger.parent().data('load-player');
     var remove = trigger.hasClass('btn-primary') || trigger.hasClass('btn-danger') ? true : false;
     if (Skhf.session.user) {
