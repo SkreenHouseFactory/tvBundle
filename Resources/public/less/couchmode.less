@@ -1,35 +1,16 @@
-/*.no-touch {
-  #couchmode {
-    #couchmode-sliders {
-      .container {
-        overflow-y: auto;
-        height: 300px;
-
-        .slider {
-          height: 270px;
-          overflow-y: hidden;
-
-          h2 {
-            font-size: 1.3em;
-            font-weight: normal;
-            padding-left: 10px;
-            margin-bottom: 0;
-          }
-          
-          &.down, &.up {
-            ul {
-              opacity: 1;
-            }
-          }
-        }
-      }
-    }
-  }
-}*/
-
-
 .couchmode-overlay {
   z-index: 10;
+}
+
+#couchmode-player-meta, .player-meta {
+  display: none;
+  color: white;
+  background: rgba(0, 0, 0, 0.9);
+  position: absolute;
+  margin: 1% 0 0 1%;
+  width: 30%;
+  padding: 5px;
+  border-radius: 5px;
 }
 
 #couchmode {
@@ -103,16 +84,5 @@
     .progress {
       margin: 20% 30%;
     }
-  }
-
-  #couchmode-player-meta, .player-meta {
-    display: none;
-    color: white;
-    background: rgba(0, 0, 0, 0.9);
-    position: absolute;
-    margin: 1% 0 0 1%;
-    width: 30%;
-    padding: 5px;
-    border-radius: 5px;
   }
 }
