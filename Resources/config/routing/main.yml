@@ -1,4 +1,4 @@
 #tv
 tv:
-    pattern:  /tv
+    pattern:  /
     defaults: { _controller: SkreenHouseFactoryTvBundle:Main:tv }
