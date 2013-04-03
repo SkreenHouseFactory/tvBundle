@@ -238,7 +238,7 @@ Couchmode = {
       UI.error('Plus de programmes !');
     }
   },
-  play: function(li, occurrence_id) {
+  play: function(elmt, occurrence_id) {
     var self = this;
     console.log('Couchmode.play', 'occurrence_id:', occurrence_id, 'params:', this.params);
     if (typeof Player.elmt == 'undefined') {
@@ -247,16 +247,16 @@ Couchmode = {
     UI.removeLoader(Player.elmt);
     this.elmt.removeClass('unvailable');
 
-    var li = typeof li != 'undefined' && li ? li : $('li:not(.static):first', this.active_slider);
-    //console.log('Couchmode.play', 'player-program', li.data('player-program'), li);
+    var elmt = typeof elmt != 'undefined' && elmt ? elmt : $('li:not(.static):first', this.active_slider);
+    //console.log('Couchmode.play', 'player-program', elmt.data('player-program'), elmt);
 
-    var player_datas = li.data('player-program');
+    var player_datas = elmt.data('player-program');
     if (typeof player_datas == 'undefined') {
       return this.error('player_datas undefined');
     } else if (player_datas.id) {
-      UI.focus(li);
+      UI.focus(elmt);
       $('li.tv-component-focused', this.sliders).removeClass('tv-component-focused');
-      li.addClass('tv-component-focused');
+      elmt.addClass('tv-component-focused');
 
       //onErrorCallback
       var onErrorCallback = function(error){
@@ -297,7 +297,7 @@ Couchmode = {
       //}
       // TODO : Player.loadMetaProgram({title: li.find('.title').text(), format:'', year:''});
     } else {
-      console.warn(['Couchmode.play', 'error player', li.data('id'), player_datas]);
+      console.warn(['Couchmode.play', 'error player', elmt.data('id'), player_datas]);
     }
   },
   error: function(msg) {
