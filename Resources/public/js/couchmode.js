@@ -250,7 +250,7 @@ Couchmode = {
     var elmt = typeof elmt != 'undefined' && elmt ? elmt : $('li:not(.static):first', this.active_slider);
     //console.log('Couchmode.play', 'player-program', elmt.data('player-program'), elmt);
 
-    var player_datas = elmt.data('player-program');
+    var player_datas = Player.program;
     if (typeof player_datas == 'undefined') {
       return this.error('player_datas undefined');
     } else if (player_datas.id) {
