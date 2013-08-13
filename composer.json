@@ -1,7 +1,7 @@
 {
     "name":        "SkreenHouseFactory/tvBundle",
     "type":        "symfony-bundle",
-    "description": "Symfony2 tv bundle mySkreen.",
+    "description": "Symfony2 main bundle mySkreen.",
     "keywords":    ["mySkreen", "bundle"],
     "homepage":    "http://github.com/SkreenHouseFactory/tvBundle",
     "license":     "Private",
@@ -30,9 +30,9 @@
 
     "autoload": {
         "psr-0": {
-            "SkreenHouseFactory\\tvBundle": "."
+            "SkreenHouseFactory\\tvBundle": ""
         }
     },
 
-    "target-dir": ""
+    "target-dir": "SkreenHouseFactory/tvBundle"
 }
