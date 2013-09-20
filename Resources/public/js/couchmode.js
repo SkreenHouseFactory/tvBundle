@@ -250,55 +250,71 @@ Couchmode = {
     var elmt = typeof elmt != 'undefined' && elmt ? elmt : $('li:not(.static):first', this.active_slider);
     //console.log('Couchmode.play', 'player-program', elmt.data('player-program'), elmt);
 
-    var player_datas = Player.program;
-    if (typeof player_datas == 'undefined') {
-      return this.error('player_datas undefined');
-    } else if (player_datas.id) {
-      UI.focus(elmt);
-      $('li.tv-component-focused', this.sliders).removeClass('tv-component-focused');
-      elmt.addClass('tv-component-focused');
+    API.query(
+      'GET',
+      'player/' + occurrence_id + '/' + Skhf.session.uid + '.json',
+      {
+        with_program: true
+      },
+      function(json){
+        Player.program = json.program;
+        console.log('Couchmode.play', 'remote player data', Player.program);
 
-      //onErrorCallback
-      var onErrorCallback = function(error){
-        if (error) {
-          this.error(error);
-        } else {
-          self.next();
-        }
-      }
+        var player_datas = Player.program;
 
-      Player.loadMetaProgram(player_datas);
-      //YouTube
-      if (isNaN(player_datas.id)) {
-        Player.play({
-                      format: player_datas.format, 
-                      url: player_datas.id
-                    },
-                    onErrorCallback);
-      //Player mySkreen
-      } else {
-        var args = {fromWebsite: 'couchmode'}
-        if (!this.params.hide_sliders) {
-          args.control = 'disabled';
-        }
-        if (typeof occurrence_id != 'undefined' && occurrence_id != null) {
-          Player.playOccurrence(occurrence_id, 
-                              onErrorCallback,
-                              args);
+        if (!player_datas) {
+          console.warn(['Couchmode.play', 'error player', elmt.data('id'), player_datas]);
+          return self.error('player_datas undefined');
         } else {
-          Player.playProgram(player_datas.id, 
-                              onErrorCallback,
-                              args);
+          UI.focus(elmt);
+          $('li.tv-component-focused', self.sliders).removeClass('tv-component-focused');
+          elmt.addClass('tv-component-focused');
+
+          //onErrorCallback
+          var onErrorCallback = function(error){
+            if (error) {
+              self.error(error);
+            } else {
+              self.next();
+            }
+          }
+
+          Player.loadMetaProgram(player_datas);
+          //YouTube
+          if (isNaN(player_datas.id)) {
+            Player.play({
+                format: player_datas.format, 
+                url: player_datas.id
+              },
+              onErrorCallback
+            );
+          //Player mySkreen
+          } else {
+            var args = {fromWebsite: 'couchmode'}
+            if (self.params.hide_controls) {
+              args.control = 'disabled';
+            }
+            if (typeof occurrence_id != 'undefined' && occurrence_id != null) {
+              Player.playOccurrence(
+                occurrence_id, 
+                onErrorCallback,
+                args
+              );
+            } else {
+              Player.playProgram(
+                player_datas.id, 
+                onErrorCallback,
+                args
+              );
+            }
+          }
+          //console.log('Couchmode.play', 'play', play);
+          //if (play == false) { // pas de vidéo : on lance la popin
+          //  li.click();
+          //}
+          // TODO : Player.loadMetaProgram({title: li.find('.title').text(), format:'', year:''});
         }
-      }
-      //console.log('Couchmode.play', 'play', play);
-      //if (play == false) { // pas de vidéo : on lance la popin
-      //  li.click();
-      //}
-      // TODO : Player.loadMetaProgram({title: li.find('.title').text(), format:'', year:''});
-    } else {
-      console.warn(['Couchmode.play', 'error player', elmt.data('id'), player_datas]);
-    }
+    });
   },
   error: function(msg) {
     switch(msg) {
@@ -308,15 +324,15 @@ Couchmode = {
       default:
         $('#couchmode-error').html(msg).fadeIn();
         setTimeout(function() {
-                     $('#couchmode-error').hide().empty();
-                   }, 3000);
+           $('#couchmode-error').hide().empty();
+         }, 3000);
       break;
     }
 
     $('#couchmode-error').html(msg).fadeIn();
     setTimeout(function() {
-                 $('#couchmode-error').hide().empty();
-               }, 3000);
+       $('#couchmode-error').hide().empty();
+     }, 3000);
   },
   unload: function() {
     console.log('Couchmode.unload');
