@@ -66,7 +66,7 @@ Couchmode = {
       e.preventDefault();
       self.unload();
     });
-    $('[data-play-program-id]', this.elmt).unbind().bind('click', function(e) {
+    $('[data-play-program-id]', this.elmt).unbind().bind('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
       var elmt = $(this);
@@ -323,14 +323,14 @@ Couchmode = {
       break;
       default:
         $('#couchmode-error').html(msg).fadeIn();
-        setTimeout(function() {
+        setTimeout(function() {
            $('#couchmode-error').hide().empty();
          }, 3000);
       break;
     }
 
     $('#couchmode-error').html(msg).fadeIn();
-    setTimeout(function() {
+    setTimeout(function() {
        $('#couchmode-error').hide().empty();
      }, 3000);
   },
