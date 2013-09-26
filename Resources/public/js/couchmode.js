@@ -32,20 +32,23 @@ Couchmode = {
       this.elmt.show();
     } else {
       var params = $.extend({
-                             img_width: 150,
-                             img_height: 200,
-                             with_pass: 1,
-                             limit: 3
-                            },
-                            args);
-      API.query('GET',
-                'couchmode.json',
-                params,
-                function(json){
-                  self.start(json, args);
-                }, 
-                true, 
-                2);
+          img_width: 150,
+          img_height: 200,
+          with_pass: 1,
+          limit: 3
+        },
+        args
+      );
+      API.query(
+        'GET',
+        'couchmode.json',
+        params,
+        function(json){
+          self.start(json, args);
+        }, 
+        true, 
+        2
+      );
     }
 
     // initialize idle
@@ -107,13 +110,14 @@ Couchmode = {
     //load
     this.loadMenu(datas.menu, args);
     this.loadSliders(datas.sliders, function(){
-      console.log('Couchmode.start', 'callback', $('.slider', self.sliders), 'autoplay', datas.autoplay);
+      console.log('Couchmode.start', 'callback',  datas);
       UI.keynav();
       if (self.active_slider == null) {
         self.active_slider = $('.slider:first', self.sliders);
         self.active_slider.addClass('current');
         $('.slider:not(.current)', self.sliders).addClass('down');
         var autoplay = $('[data-id="' + datas.autoplay + '"]');
+        console.log('Couchmode.start', 'callback',  'autoplay', autoplay, '[data-id="' + datas.autoplay + '"]');
         self.play(autoplay.length > 0 ? autoplay : null, 
                   typeof datas.occurrence_id != 'undefined' ? datas.occurrence_id : null);
 
@@ -248,7 +252,27 @@ Couchmode = {
     this.elmt.removeClass('unvailable');
 
     var elmt = typeof elmt != 'undefined' && elmt ? elmt : $('li:not(.static):first', this.active_slider);
-    //console.log('Couchmode.play', 'player-program', elmt.data('player-program'), elmt);
+    console.log('Couchmode.play', 'player-program', elmt.data('player-program'), elmt);
+
+    Player.program = elmt.data('player-program');
+    //hack live
+    if (Player.program && 
+        typeof Player.program.popular_channel != 'undefined' && 
+        typeof Player.program.popular_channel.live.player != 'undefined') {
+        Player.play({
+            format: 'iframe', 
+            url: Player.program.popular_channel.live.player
+          })
+      return;
+    }
+    //hack YouTube
+    if (isNaN(Player.program.id)) {
+      Player.play({
+        format: Player.program.format, 
+        url: Player.program.id
+      });
+      return;
+    }
 
     API.query(
       'GET',
@@ -280,34 +304,26 @@ Couchmode = {
           }
 
           Player.loadMetaProgram(player_datas);
-          //YouTube
-          if (isNaN(player_datas.id)) {
-            Player.play({
-                format: player_datas.format, 
-                url: player_datas.id
-              },
-              onErrorCallback
-            );
+
           //Player mySkreen
-          } else {
-            var args = {fromWebsite: 'couchmode'}
-            if (self.params.hide_controls) {
-              args.control = 'disabled';
-            }
-            if (typeof occurrence_id != 'undefined' && occurrence_id != null) {
-              Player.playOccurrence(
-                occurrence_id, 
-                onErrorCallback,
-                args
-              );
-            } else {
-              Player.playProgram(
-                player_datas.id, 
-                onErrorCallback,
-                args
-              );
-            }
+          var args = {fromWebsite: 'couchmode'}
+          if (self.params.hide_controls) {
+            args.control = 'disabled';
           }
+          if (typeof occurrence_id != 'undefined' && occurrence_id != null) {
+            Player.playOccurrence(
+              occurrence_id, 
+              onErrorCallback,
+              args
+            );
+          } else {
+            Player.playProgram(
+              player_datas.id, 
+              onErrorCallback,
+              args
+            );
+          }
+
           //console.log('Couchmode.play', 'play', play);
           //if (play == false) { // pas de vidéo : on lance la popin
           //  li.click();
