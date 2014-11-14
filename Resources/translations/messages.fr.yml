@@ -22,9 +22,9 @@ playlist:
         replay: Les dernières mise en ligne Replay & Web
         vod: Les dernières mise en ligne VOD
         friends: Vos amis regardent
-    yours: Vos playlists
+    yours: Votre chaîne
 splash:
     tv.replay: TV & Replay
     vod:  VOD
     cine: Au cinéma
-    playlist: Vos playlists
+    playlist: Votre chaîne
